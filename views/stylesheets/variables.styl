@@ -1,0 +1,12 @@
+//Declaring Stylus variables
+
+//Import stylus extension nib
+@import nib
+
+//Function for creating font-faces
+font-face-create(name, fileName, weight=normal, style=normal, ext="ttf")
+	@font-face
+		font-family name
+		font-weight weight
+		font-style style
+		src unquote("url(/fonts/"+fileName+"."+ext+")")

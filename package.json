@@ -1,0 +1,34 @@
+{
+  "name": "Fleet",
+  "version": "1.0.0",
+  "description": "Fleet beta",
+  "main": "server.js",
+  "scripts": {
+    "build-css": "stylus -u nib views/stylesheets/ -o static/css",
+    "watch-css": "stylus -u nib views/stylesheets/ -o static/css -w",
+    "clean": "rm -rf static/css && mkdir -p static/css",
+    "build": "npm run clean && npm run build-css",
+    "watch": "npm run clean && npm run watch-css",
+    "w-watch": "npm run w-clean && npm run w-watch-css && nodemon server",
+    "start": "npm run build & npm run watch & node server",
+    "w-start": "npm run w-build & node server",
+    "w-dev": "start \"\" /B node server && npm run w-watch",
+    "w-build": "npm run w-clean && npm run w-build-css",
+    "w-build-css": "stylus -u nib views\\stylesheets\\ -o static\\css",
+    "w-watch-css": "stylus -u nib views\\stylesheets\\ -o static\\css -w",
+    "w-clean": "rd /s /q static\\css && mkdir static\\css"
+  },
+  "author": "Fleet development team",
+  "license": "ISC",
+  "dependencies": {
+    "asyncawait": "^1.0.6",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "firebase": "^4.11.0",
+    "firebase-admin": "^5.11.0",
+    "morgan": "^1.9.0",
+    "nib": "^1.1.2",
+    "pug": "^2.0.0-rc.4",
+    "stylus": "^0.54.5"
+  }
+}
