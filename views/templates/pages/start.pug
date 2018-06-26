@@ -1,7 +1,8 @@
 extends ../index
 block mainContent
 	header
-		.upper-logo
+		video.video-background(poster='images/logo.png' playbackRate='3.0' autoplay loop muted)
+			source(src='../videos/fleet.mp4' type="video/mp4")
 		.logo
 		h3.title Fleet is a platform for young creators to meet, collaborate and develop.
 		.signup-wrapper
