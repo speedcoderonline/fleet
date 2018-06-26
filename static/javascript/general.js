@@ -27,7 +27,7 @@ function serverData(path, success, error){
 
 function addToEmailList(email){
 	//check if emaol
-	var email = document.querySelectior('#email-list-input').value
+	var email = document.querySelector('#email-list-input').value
 	$.getJSON("http://freegeoip.net/json/", function (data) {
 		var country = data.country_name
 		var region = data.region_name
