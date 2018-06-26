@@ -3,6 +3,8 @@ html
 	head
 		title #{title}
 
+		meta(name="viewport" content="width=device-width, initial-scale=1")
+
 		link(rel='stylesheet' type='text/css' href='/css/coat.css')
 
 		script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
@@ -18,8 +20,9 @@ html
 				messagingSenderId: "462032697855"
 			};
 			firebase.initializeApp(config);
-			
+
 		script(src='/javascript/general.js')
+
 
 	body(data-page=dataPage)
 		.main-content

@@ -25,9 +25,17 @@ function serverData(path, success, error){
 	xhr.send();
 }
 
+function validateEmail(email) {
+	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(String(email).toLowerCase());
+}
+
 function addToEmailList(email){
-	//check if emaol
 	var email = document.querySelector('#email-list-input').value
+	if(!validateEmail(email)){
+		alert('Felaktig email')
+		return
+	}
 	$.getJSON("http://freegeoip.net/json/", function (data) {
 		var country = data.country_name
 		var region = data.region_name
@@ -39,5 +47,6 @@ function addToEmailList(email){
 			region: region,
 		})
 		alert('Thenka yö')
+		document.querySelector('#email-list-input').value = ''
 	});
 }
