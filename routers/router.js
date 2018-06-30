@@ -13,6 +13,7 @@ module.exports = (function() {
   //Array with pages
   var routes = [
     {page:'start', path:'/'},
+    {page:'signup'},
     {page:'creator',path:'user/creator:id', dataGen: req=>{
       return {user:req.params.id}
     }},
