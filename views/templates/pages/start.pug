@@ -28,3 +28,24 @@ block mainContent
 					li Build perfect teams with people from all creative areas.
 					li Search by category, name or already existing groups.
 					li Join and create groups.
+	script.
+		function addToEmailList(email){
+			var email = document.querySelector('#email-list-input').value
+			if(!validateEmail(email)){
+				alert('Felaktig email')
+				return
+			}
+			$.getJSON("http://freegeoip.net/json/", function (data) {
+				var country = data.country_name
+				var region = data.region_name
+
+				firebase.database().ref('emailList/' + email.replace(/\./g, '%2E')).set({
+					email: email,
+					date: (new Date()).getTime(),
+					country: country,
+					region: region,
+				})
+				popUp('Thank you, you will hear from us soon!')
+				document.querySelector('#email-list-input').value = ''
+			});
+		}

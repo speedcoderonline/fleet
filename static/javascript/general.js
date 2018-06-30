@@ -47,26 +47,7 @@ function validateEmail(email) {
 	return re.test(String(email).toLowerCase());
 }
 
-function addToEmailList(email){
-	var email = document.querySelector('#email-list-input').value
-	if(!validateEmail(email)){
-		alert('Felaktig email')
-		return
-	}
-	$.getJSON("http://freegeoip.net/json/", function (data) {
-		var country = data.country_name
-		var region = data.region_name
 
-		firebase.database().ref('emailList/' + email.replace(/\./g, '%2E')).set({
-			email: email,
-			date: (new Date()).getTime(),
-			country: country,
-			region: region,
-		})
-		alert('Thenka yö')
-		document.querySelector('#email-list-input').value = ''
-	});
-}
 
 
 // Get nearby fitting people
@@ -84,3 +65,33 @@ function addToEmailList(email){
 // 	})
 
 // })
+
+
+
+function popUp(content){
+	var pageOverlay = document.createElement('div')
+	pageOverlay.classList.add('page-overlay')
+	document.body.appendChild(pageOverlay)
+
+	var popUpBox = document.createElement('div')
+	var text = document.createElement('p')
+	var confirm = document.createElement('p')
+
+	popUpBox.classList.add('pop-up-box')
+	text.classList.add('text')
+	confirm.classList.add('confirm')
+
+	confirm.setAttribute('onclick', 'closePopUp()')
+	popUpBox.appendChild(text)
+	popUpBox.appendChild(confirm)
+
+	text.innerHTML = content
+	confirm.innerText = 'Close'
+	pageOverlay.appendChild(popUpBox)
+}
+
+function closePopUp(){
+	var pageOverlay = document.querySelector('.page-overlay')
+
+	pageOverlay.remove()
+}
