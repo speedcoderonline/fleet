@@ -22,7 +22,7 @@ block mainContent
 		var userId = subpage.replace('creator-','')
 
 		//action-button -> edit or add friend
-		firebase.database().ref('creators/' + userId).once("value", function(snapshot){
+		firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
 			var userData = snapshot.val()
 			console.log(userData)
 
