@@ -10,6 +10,19 @@ const admin = require('firebase-admin')
 // Initiate App
 const app = express()
 
+// Firebase
+var serviceAccount = require("./fleet-7cb48-firebase-adminsdk-73xdg-45db96141a.json");
+
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount),
+	databaseURL: "https://fleet-7cb48.firebaseio.com"
+});
+
+admin.database().ref('/users/userx').set({
+    username: "test",
+    email: "test@mail.com"
+});
+
 //Compile Stylus
 
 function compile(str, path){

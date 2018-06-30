@@ -1,6 +1,34 @@
 extends ../index
 block mainContent
 
+	.profile-wrapper
+		.action-button#profile-action-button
+		.profile-info
+			.image
+			h2.name
+			p.description
+			.location
+				.location-symbol
+				h3.location-name
+			.skills
+				h4.title Knowledge
+				//.skill
+			.experience
+				h4.title What I have done
+
 	script.
 		var userId = subpage.replace('creator-','')
 		alert(userId)
+
+		//action-button -> edit or add friend
+
+		firebase.database().ref('creators/' + userId).once(function(snapshot){
+
+
+		})
+
+		if(currentUser == userId){
+			document.getElementById('profile-action-button').innerText = 'Edit'
+		}else{
+			document.getElementById('profile-action-button').innerText = 'Add Friend'
+		}

@@ -50,3 +50,20 @@ function addToEmailList(email){
 		document.querySelector('#email-list-input').value = ''
 	});
 }
+
+
+// Get nearby fitting people
+
+// var uid
+
+// firebase.database().ref('creators/' + uid).once(function(snapshot){
+// 	var currentUser = snapshot.val()
+// 	var currentUserLocation = currentUser.location
+
+// 	firebase.database().ref('location/' + currentUserLocation.country + '/cities/' + currentUserLocation.country).orderByChild('skills/' + currentUser.skills.topSkills).startAt('').once(function(snapshot){
+// 		var currentUserLocation = snapshot.val()
+		
+
+// 	})
+
+// })
