@@ -7,6 +7,11 @@ var pageinfo = typeof dataPage!=='undefined'? pageinfos[dataPage]: null
 // 	return subpageinfo.title.replace(/ /g,"-").toLowerCase().replace("å","a").replace("ä","a").replace('ö','o') == subpage
 // })
 
+var currentUser = firebase.auth().currentUser
+if(currentUser){
+	var currentUserUid = firebase.auth().currentUser.uid
+}
+
 function serverData(path, success, error){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function()

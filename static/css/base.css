@@ -6,6 +6,14 @@
 h3 {
   font-size: 200%;
 }
+@media (max-width: 500px) {
+  h3 {
+    font-size: 120%;
+  }
+}
 p {
   font-size: 160%;
+}
+input:focus {
+  outline-width: 0;
 }

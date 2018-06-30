@@ -5,29 +5,82 @@ block mainContent
 		.action-button#profile-action-button
 		.profile-info
 			.image
-			h2.name
-			p.description
+			h2.name#user-name
+			p.description#user-description
 			.location
 				.location-symbol
-				h3.location-name
-			.skills
+				h3.location-name#user-location
+			.skills#user-skills
 				h4.title Knowledge
-				//.skill
-			.experience
+				.wrapper
+			.projects#user-projects
 				h4.title What I have done
+				.wrapper
+
 
 	script.
 		var userId = subpage.replace('creator-','')
-		alert(userId)
 
 		//action-button -> edit or add friend
+		firebase.database().ref('creators/' + userId).once("value", function(snapshot){
+			var userData = snapshot.val()
+			console.log(userData)
 
-		firebase.database().ref('creators/' + userId).once(function(snapshot){
+			document.getElementById('user-name').innerText = userData.firstName + ' ' + userData.lastName
+			document.getElementById('user-description').innerText = userData.description
+			document.getElementById('user-location').innerText = userData.location.city + ', ' + userData.location.country
+
+			//render skills
+
+			function renderSkill(title){
+				var skillDiv = document.createElement('div')
+				skillDiv.innerText = title
+				skillDiv.classList.add('skill')
+				document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
+			}
+
+			Object.values(userData.skills).forEach(function(mainSkill, idx){
+				renderSkill(Object.keys(userData.skills)[idx])
+				Object.keys(mainSkill).forEach(function(subSkill, idx){
+					renderSkill(subSkill)
+				})
+			})
+
+			//render Projects
+
+			function renderProjects(title, description, link){
+				var wrapperDiv = document.createElement('div')
+				wrapperDiv.classList.add('skill')
+				document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
+
+				var titleDiv = document.createElement('h2')
+				titleDiv.classList.add('title')
+				titleDiv.innerText = title
+				document.getElementById('user-projects').querySelector('.wrapper').appendChild(titleDiv)
+
+				var descriptionDiv = document.createElement('p')
+				descriptionDiv.classList.add('description')
+				descriptionDiv.innerText = description
+				document.getElementById('user-projects').querySelector('.wrapper').appendChild(descriptionDiv)
+
+				if(link){
+					var linkEl = document.createElement('a')
+					linkEl.classList.add('link')
+					linkEl.innerText = link
+					linkEl.href = link
+					document.getElementById('user-projects').querySelector('.wrapper').appendChild(linkEl)
+				}
+				
+			}
+
+			Object.values(userData.projects).forEach(function(project, idx){
+				renderProjects(project.title, project.description, project.link)
+			})
 
 
 		})
 
-		if(currentUser == userId){
+		if(currentUserUid == userId){
 			document.getElementById('profile-action-button').innerText = 'Edit'
 		}else{
 			document.getElementById('profile-action-button').innerText = 'Add Friend'

@@ -6,40 +6,54 @@
 h3 {
   font-size: 200%;
 }
+@media (max-width: 500px) {
+  h3 {
+    font-size: 120%;
+  }
+}
 p {
   font-size: 160%;
+}
+input:focus {
+  outline-width: 0;
 }
 [data-page='start'] .main-content {
   color: #fff;
 }
 [data-page='start'] .main-content header {
   padding: 250px 0;
-  background-image: url("../images/new-york-person.jpg");
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
-  background-position: center;
   text-align: center;
   position: relative;
+  overflow: hidden;
 }
-[data-page='start'] .main-content header .upper-logo {
+@media (max-width: 500px) {
+  [data-page='start'] .main-content header {
+    padding: 150px 0;
+  }
+}
+[data-page='start'] .main-content header video {
   position: absolute;
-  top: 0;
-  left: 0;
-  margin: 15px 35px;
-  height: 30px;
-  width: 30px;
-  background: url("../images/logo.png");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 100%;
+  -webkit-transform: translate(-50%, -50%) scale(1.03);
+  -moz-transform: translate(-50%, -50%) scale(1.03);
+  -o-transform: translate(-50%, -50%) scale(1.03);
+  -ms-transform: translate(-50%, -50%) scale(1.03);
+  transform: translate(-50%, -50%) scale(1.03);
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  filter: blur(7px) brightness(80%);
+}
+@media (max-width: 1370px) {
+  [data-page='start'] .main-content header video {
+    height: 100%;
+    width: auto;
+  }
 }
 [data-page='start'] .main-content header .logo {
   width: 70px;
   height: 70px;
-  background: url("../images/logo-white.png");
+  background: url("../images/logo.png");
   -webkit-background-size: contain;
   -moz-background-size: contain;
   background-size: contain;
@@ -48,11 +62,14 @@ p {
   margin: auto;
 }
 [data-page='start'] .main-content header .title {
-  width: 800px;
+  width: 80%;
+  max-width: 800px;
   margin: 30px auto;
+  cursor: default;
 }
 [data-page='start'] .main-content header .signup-wrapper {
-  width: 600px;
+  width: 90%;
+  max-width: 600px;
   margin: auto;
   border-radius: 5px;
   overflow: hidden;
@@ -74,6 +91,16 @@ p {
   -ms-flex-align: stretch;
   -webkit-align-items: stretch;
   align-items: stretch;
+}
+@media (max-width: 500px) {
+  [data-page='start'] .main-content header .signup-wrapper {
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    -o-box-orient: vertical;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
 }
 [data-page='start'] .main-content header .signup-wrapper input {
   padding: 15px 30px;
@@ -104,6 +131,12 @@ p {
   opacity: 0.8;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
   filter: alpha(opacity=80);
+  cursor: default;
+}
+@media (max-width: 500px) {
+  [data-page='start'] .main-content header .status {
+    font-size: 130%;
+  }
 }
 [data-page='start'] .main-content section {
   background: #43474a;
@@ -114,6 +147,8 @@ p {
   margin-bottom: 30px;
 }
 [data-page='start'] .main-content section p.text {
+  width: 80%;
   max-width: 800px;
   margin: auto;
+  line-height: 1.5;
 }

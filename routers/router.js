@@ -14,7 +14,7 @@ module.exports = (function() {
   var routes = [
     {page:'start', path:'/'},
     {page:'signup'},
-    {page:'creator',path:'user/creator:id', dataGen: req=>{
+    {page:'creator',path:'user/creator-:id', dataGen: req=>{
       return {user:req.params.id}
     }},
     {page:'brand',path:'user/brand-:id', dataGen: req=>{
