@@ -3,17 +3,41 @@ block mainContent
 
 	img.icon
 
-	form(action='/create-user/creator' method='POST' id='signup-form')
-		div.data
+	#signupform
+		.data
 			input(type='text' name='firstname' id='firstname')
 			label(for='firstname') Name
-		div.data
+		.data
 			input(type='text' name='lastname' id='lastname')
 			label(for='lastname') Last Name
-		div.data
+		.data
 			input(type='email' name='email' id='email')
 			label(for='email') Email
-		div.data
+		.data
 			input(type='password' name='password' id='password')
 			label(for='password') Password
-		input(type='submit')
+		div(onclick='createUser()') Sign up
+
+	script.
+		function createUser(){
+			var firstname = _('firstname').value
+			var lastname = _('lastname').value
+			var email = _('email').value
+			var password = _('password').value
+
+			firebase.auth().createUserWithEmailAndPassword(email, password).then(function(){
+				firebase.database().ref('users/creators/' + currentUser().uid).set({
+					firstname: firstname,
+					lastname: lastname,
+					email: email,
+					uid: currentUser().uid
+				})
+			}).catch(function(error){
+				const errorCode = error.code
+				const errorMessage = error.message
+				console.log(errorCode + ': ' + errorMessage)
+				if(errorCode === 'auth/email-already-in-use'){
+					alert('There already exists an account with this email')
+				}
+			})
+		}

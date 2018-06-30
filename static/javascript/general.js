@@ -1,5 +1,7 @@
 //Reoccuring functions
 
+
+//Get subpage
 var subpage = window.location.pathname.replace(/\/$/,'').split('/');
 subpage = subpage[subpage.length-1]
 var pageinfo = typeof dataPage!=='undefined'? pageinfos[dataPage]: null
@@ -7,11 +9,20 @@ var pageinfo = typeof dataPage!=='undefined'? pageinfos[dataPage]: null
 // 	return subpageinfo.title.replace(/ /g,"-").toLowerCase().replace("å","a").replace("ä","a").replace('ö','o') == subpage
 // })
 
-var currentUser = firebase.auth().currentUser
-if(currentUser){
-	var currentUserUid = firebase.auth().currentUser.uid
+
+function _(id){
+	return document.getElementById(id)
+}
+//Current Firebase user
+function currentUser(){
+	var user = firebase.auth().currentUser
+	if(user){
+		var userId = firebase.auth().currentUser.uid
+	}
+	return user
 }
 
+//Get requests
 function serverData(path, success, error){
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function()
@@ -30,6 +41,7 @@ function serverData(path, success, error){
 	xhr.send();
 }
 
+//Validate email
 function validateEmail(email) {
 	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(String(email).toLowerCase());
