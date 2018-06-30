@@ -3,10 +3,11 @@
 	.main-content
 		color white
 		header
-			padding 250px 0
+			padding 200px 0
 			text-align center
 			position relative
 			overflow hidden
+			box-shadow 0 0 50px rgba(black, .35)
 			@media (max-width: 500px)
 				padding 150px 0
 			
@@ -33,9 +34,13 @@
 				
 			.title
 				width 80%
-				max-width 800px
-				margin 30px auto
+				max-width 1000px
+				margin 35px auto
+				margin-bottom 50px
 				cursor default
+				font-weight lighter
+				span
+					font-weight initial
 				
 			.signup-wrapper
 				width 90%
@@ -64,24 +69,82 @@
 			.status
 				position absolute
 				width 100%
-				bottom 40px
+				top 30px
 				font-size 160%
+				font-weight initial
 				opacity .8
 				cursor default
 				
 				@media (max-width: 500px)
 					font-size 130%
-
+					
+			a.video-link
+				position absolute
+				transform translateX(-50%)
+				bottom 30px
+				left 50%
+				color white
+				font-size 140%
+				text-decoration none
+				opacity .8
+				img
+					vertical-align middle
+					height 20px
+					margin-right 7px
+					display inline-block
+					
+				div
+					font-weight lighter
+					vertical-align middle
+					display inline-block
 
 		section
-			background #43474a
-			padding 150px 0
+			background #252525
+			padding 100px 0
 			text-align center
-			
-			h3
+
+			h4
 				margin-bottom 30px
-			p.text
-				width 80%
-				max-width 800px
+				
+			.divider
+				height 2	px
+				width 220px
+				background linear-gradient(to right, #97A0D1, #D48F89)
 				margin auto
-				line-height 1.5
+				margin-top 15px
+				
+			p
+				width 80%
+				max-width 1000px
+				margin auto
+				opacity .8
+				letter-spacing 1px
+			
+			article
+				display inline-block
+				h6
+					opacity .6
+					
+				.content-wrapper
+					text-align left
+					display inline-block
+					
+					p
+						width 100%
+						margin-bottom 20px
+				ul
+					box-sizing border-box
+					padding-left 30px
+					list-style-type disc
+					text-align left
+					margin auto
+					li
+						list-style-type disc
+						display list-item
+						margin-bottom 5px
+						opacity .8
+						letter-spacing 1px
+					
+		
+		section.darker
+			background #1c1c1c

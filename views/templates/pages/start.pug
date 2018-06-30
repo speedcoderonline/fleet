@@ -4,11 +4,27 @@ block mainContent
 		video.video-background(poster='images/logo.png' playbackRate='3.0' autoplay loop muted)
 			source(src='../videos/fleet.mp4' type="video/mp4")
 		.logo
-		h3.title Fleet is a platform for young creators to meet, collaborate and develop.
+		h3.title Fleet is a platform for <span>young creators</span> to meet, collaborate and develop.
 		.signup-wrapper
 			input(type='email' placeholder='Email')#email-list-input
 			.submit-btn(onclick='addToEmailList()') Subscribe
 		.status Coming soon
+		a(href='https://www.youtube.com/watch?v=XrLtvg7xK0w').video-link
+			img(src='../images/youtube-logo.png')
+			div Watch our promo here
+	section.darker
+		h4#vision Our vision
+		p The Internet has created a world of possibilities to develop new creative skills for youths. Us at Fleet want to take it to the next level. We want to help young creators come together to create as a unit. Our mission is to take you through the first steps of you career. 
 	section
-		h3 What we do
-		p.text Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+		div.images
+		article
+			h6 Build your teams
+			h4 Meet other creators
+				.divider
+			.content-wrapper
+				p Search, find and form teams with other creators from all skillsets.
+				ul
+					li Find other young creators.
+					li Build perfect teams with people from all creative areas.
+					li Search by category, name or already existing groups.
+					li Join and create groups.
