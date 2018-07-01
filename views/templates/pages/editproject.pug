@@ -1,0 +1,54 @@
+extends ../index
+block mainContent
+
+	.project-wrapper
+		input.info.title#title(placeholder='title')
+		input.info.description#description(placeholder='description')
+		input.info.link#link(placeholder='link (optional)')
+
+		.save(onclick='saveProject()') Save
+		.delete(onclick='deleteProject()') Delete
+
+
+	script.
+		///alert(subpage)
+
+		//action-button -> edit or add friend
+		firebase.auth().onAuthStateChanged(function(user) {
+			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + subpage).once("value", function(snapshot){
+				var project = snapshot.val()
+
+				_('title').value = project.title
+				_('description').value = project.description
+				_('link').value = project.link
+
+				if(project.title == '' && project.description == '' && project.link == ''){
+					firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + subpage).remove()
+				}
+				
+
+			})
+		})
+
+		function saveProject(){
+			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + subpage).set({
+				title: _('title').value,
+				description: _('description').value,
+				link: _('link').value,
+				id: subpage
+			}).then(function(){
+				window.location = '/editcreator'
+			})
+		}
+
+		function deleteProject(){
+			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + subpage).remove().then(function(){
+				window.location = '/editcreator'
+			})
+		}
+
+		
+
+
+
+		

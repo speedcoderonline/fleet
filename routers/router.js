@@ -16,6 +16,9 @@ module.exports = (function() {
     {page:'signup'},
     {page:'signin'},
     {page:'editcreator'},
+    {page:'editproject',path:'editproject/:id', dataGen: req=>{
+      return {user:req.params.id}
+    }},
     {page:'creator',path:'user/creator-:id', dataGen: req=>{
       return {user:req.params.id}
     }},
