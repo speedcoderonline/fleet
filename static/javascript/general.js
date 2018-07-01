@@ -75,7 +75,7 @@ function popUp(content){
 
 	var popUpBox = document.createElement('div')
 	var text = document.createElement('p')
-	var confirm = document.createElement('p')
+	var confirm = document.createElement('div')
 
 	popUpBox.classList.add('pop-up-box')
 	text.classList.add('text')

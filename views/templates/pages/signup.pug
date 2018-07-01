@@ -1,22 +1,26 @@
 extends ../index.pug
 block mainContent
 
-	img.icon
+	img#icon(src='../icons/sign-up-icon.png')
 
 	#signupform
-		.data
-			input(type='text' name='firstname' id='firstname')
-			label(for='firstname') Name
-		.data
-			input(type='text' name='lastname' id='lastname')
+		.input-field
+			input(type='text' name='firstname' id='firstname' autocomplete='off')
+			label(for='firstname') First Name
+		br
+		.input-field
+			input(type='text' name='lastname' id='lastname' autocomplete='off')
 			label(for='lastname') Last Name
-		.data
-			input(type='email' name='email' id='email')
+		br
+		.input-field
+			input(type='email' name='email' id='email' autocomplete='off')
 			label(for='email') Email
-		.data
-			input(type='password' name='password' id='password')
+		br
+		.input-field
+			input(type='password' name='password' id='password' autocomplete='off')
 			label(for='password') Password
-		div(onclick='createUser()') Sign up
+		br
+		#signupbutton(onclick='createUser()') Sign up
 
 	script.
 		function createUser(){
@@ -24,7 +28,17 @@ block mainContent
 			var lastname = _('lastname').value
 			var email = _('email').value
 			var password = _('password').value
-
+		
+			switch(''){
+				case firstname:
+					popUp('Please enter your name.')
+					return false
+					break
+				case lastname:
+					popUp('Please enter your last name')
+					return false
+					break
+			}
 			firebase.auth().createUserWithEmailAndPassword(email, password).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid).set({
 					firstname: firstname,
@@ -36,8 +50,16 @@ block mainContent
 				const errorCode = error.code
 				const errorMessage = error.message
 				console.log(errorCode + ': ' + errorMessage)
-				if(errorCode === 'auth/email-already-in-use'){
-					alert('There already exists an account with this email')
+				
+				switch(errorCode){
+					case 'auth/email-already-in-use':
+						popUp('There already exists an account with this email.')
+						break
+					case 'auth/invalid-email':
+						popUp('The email seems to be invalid. Please check if you entered it correctly.')
+						break
+					case 'auth/weak-password':
+						popUp('Your password needs to be 6 characters or longer!')
 				}
 			})
 		}
