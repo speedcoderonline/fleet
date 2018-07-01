@@ -1,0 +1,46 @@
+extends ../index.pug
+block mainContent
+
+	.biglogo
+	
+	form#signinform
+		.input-field
+			input(type='email' name='email' id='email')
+			label(for='email') Email
+		br
+		.input-field
+			input(type='password' name='password' id='password' autocomplete='off')
+			label(for='password') Password
+		br
+		button#signinbutton Sign in
+
+	.signup-link-wrapper
+		h6 Not registered yet?
+		h4 Click <a href='/signup'>here</a> to sign up!
+
+		script.
+			signinform.addEventListener('submit', signInCreator)
+			function signInCreator(e){
+				e.preventDefault()
+				firebase.auth().signInWithEmailAndPassword(signinform.email.value, signinform.password.value).catch(function(error){
+					var errorCode = error.code
+					var errorMessage = error.message
+					console.log(errorCode + ': ' + errorMessage)
+
+					switch(errorCode){
+						case 'auth/user-not-found':
+						popUp('There is no registered user with this email.')
+						break
+						case 'auth/invalid-email':
+						popUp('The email doesn\t seem to be valid. Please check if you entered it correctly.')
+						break
+						case 'auth/wrong-password':
+						popUp('Wrong password. Sure you entered it correctly?')
+						break
+					}
+				}).then(function(){
+					if(currentUser()){
+						window.location.replace('/')
+					}
+				})
+			}

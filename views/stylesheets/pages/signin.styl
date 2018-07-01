@@ -1,5 +1,5 @@
-[data-page='signup']
-	
+[data-page='signin']
+
 	.main-content
 		background $grey
 		color white
@@ -7,11 +7,10 @@
 		min-height 100vh
 		box-sizing border-box
 		padding-bottom 60px
-		img#icon
-			width 150px
-			padding 40px 0
-			display inline-block
-		#signupform
+		
+		.biglogo
+			padding 50px 0
+		#signinform
 			text-align center
 			margin-bottom 40px
 			.input-field
@@ -45,7 +44,8 @@
 					@media(max-width 600px)
 						font-size 60%
 						top 5px
-			#signupbutton
+			#signinbutton
+				-webkit-appearance none
 				font-size 130%
 				border-radius 100px
 				background linear-gradient(to right, $purple, $pink)

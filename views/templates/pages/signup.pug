@@ -3,48 +3,51 @@ block mainContent
 
 	img#icon(src='../icons/sign-up-icon.png')
 
-	#signupform
+	form#signupform
 		.input-field
-			input(type='text' name='firstname' id='firstname' autocomplete='off')
+			input(type='text' name='firstname' id='firstname')
 			label(for='firstname') First Name
 		br
 		.input-field
-			input(type='text' name='lastname' id='lastname' autocomplete='off')
+			input(type='text' name='lastname' id='lastname')
 			label(for='lastname') Last Name
 		br
 		.input-field
-			input(type='email' name='email' id='email' autocomplete='off')
+			input(type='email' name='email' id='email')
 			label(for='email') Email
 		br
 		.input-field
-			input(type='password' name='password' id='password' autocomplete='off')
+			input(type='password' name='password' id='password')
 			label(for='password') Password
 		br
-		#signupbutton(onclick='createUser()') Sign up
+		button#signupbutton Sign up
+
+	.signup-link-wrapper
+		h6 Already have an account?
+		h3 Click <a href='/signup'>here</a> to sign in!
 
 	script.
-		function createUser(){
-			var firstname = _('firstname').value
-			var lastname = _('lastname').value
-			var email = _('email').value
-			var password = _('password').value
-		
+		signupform.addEventListener('submit', createUser)
+		function createUser(e){
+			e.preventDefault()		
 			switch(''){
-				case firstname:
+				case signupform.firstname.value:
 					popUp('Please enter your name.')
 					return false
 					break
-				case lastname:
+				case signupform.lastname.value:
 					popUp('Please enter your last name')
 					return false
 					break
 			}
-			firebase.auth().createUserWithEmailAndPassword(email, password).then(function(){
+			firebase.auth().createUserWithEmailAndPassword(signupform.email.value, signupform.password.value).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid).set({
-					firstname: firstname,
-					lastname: lastname,
-					email: email,
+					firstname: signupform.firstname.value,
+					lastname: signupform.lastname.value,
+					email: signupform.email.value,
 					uid: currentUser().uid
+				}).then(function(){
+					window.location.replace('/')
 				})
 			}).catch(function(error){
 				const errorCode = error.code

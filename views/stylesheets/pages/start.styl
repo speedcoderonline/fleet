@@ -2,6 +2,7 @@
 	
 	.main-content
 		color white
+		
 		header
 			padding 200px 0
 			text-align center
@@ -22,15 +23,6 @@
 				@media(max-width 1370px)
 					height 100%
 					width auto			
-			
-			.logo
-				width 70px
-				height 70px
-				background url('../images/logo.png')
-				background-size contain
-				background-position center
-				background-repeat no-repeat
-				margin auto
 				
 			.title
 				width 80%
@@ -39,6 +31,7 @@
 				margin-bottom 50px
 				cursor default
 				font-weight lighter
+				
 				span
 					font-weight initial
 				
@@ -87,6 +80,7 @@
 				font-size 140%
 				text-decoration none
 				opacity .8
+				
 				img
 					vertical-align middle
 					height 20px
@@ -100,10 +94,11 @@
 
 		section
 			background #252525
-			padding 100px 0
+			padding 140px 0
 			text-align center
+			position relative
 
-			h4
+			h3
 				margin-bottom 30px
 				
 			.divider
@@ -119,9 +114,20 @@
 				margin auto
 				opacity .8
 				letter-spacing 1px
-			
+				
+			div#images
+				display inline-block
+				width 40%
+				
+				img
+					top 20px
+					position relative
+					width 50%
+					
 			article
 				display inline-block
+				width 40%
+				
 				h6
 					opacity .6
 					
@@ -138,6 +144,7 @@
 					list-style-type disc
 					text-align left
 					margin auto
+				
 					li
 						list-style-type disc
 						display list-item

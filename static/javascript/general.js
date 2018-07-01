@@ -9,9 +9,14 @@ var pageinfo = typeof dataPage!=='undefined'? pageinfos[dataPage]: null
 // 	return subpageinfo.title.replace(/ /g,"-").toLowerCase().replace("å","a").replace("ä","a").replace('ö','o') == subpage
 // })
 
-
+//Get id
 function _(id){
 	return document.getElementById(id)
+}
+
+//Get class
+function __(eClass){
+	return document.querySelectorAll(eClass)
 }
 //Current Firebase user
 function currentUser(){
@@ -20,6 +25,14 @@ function currentUser(){
 		var userId = firebase.auth().currentUser.uid
 	}
 	return user
+}
+
+function db(path){
+	return firebase.database().ref(path)
+}
+
+function dbPull(path, func){
+	return firebase.database().ref(path).once('value', func)
 }
 
 //Get requests
