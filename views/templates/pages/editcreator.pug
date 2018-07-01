@@ -1,0 +1,128 @@
+extends ../index
+block mainContent
+
+	.profile-wrapper
+		.save-button#save-button save
+		.profile-info
+			.image
+			input.fist-name#first-name
+			input.last-name#last-name
+			p.description#user-description
+			.location#user-location
+				input.country
+				input.city
+			.skills#user-skills
+				h4.title Skills
+				.wrapper
+			.projects#user-projects
+				h4.title What I have done
+				.wrapper
+				.add-new(onclick='renderProject()') Add
+
+
+	script.
+
+
+		//action-button -> edit or add friend
+		firebase.auth().onAuthStateChanged(function(user) {
+			firebase.database().ref('users/creators/' + currentUser().uid).once("value", function(snapshot){
+				var userData = snapshot.val()
+
+				//try{
+
+				document.getElementById('first-name').value = userData.firstName
+				document.getElementById('last-name').value = userData.lastName
+				document.getElementById('user-description').innerText = userData.description
+				if(userData.location){
+					document.getElementById('user-location').querySelector('.country').value = userData.location.country
+					document.getElementById('user-location').querySelector('.city').value = userData.location.city
+				}
+			
+				
+
+				firebase.database().ref('skills').once("value", function(snapshot){
+					var allSkills = snapshot.val()
+
+					Object.values(allSkills).forEach(function(mainSkill, idx){
+						if(userData.skills){
+							var userMainSkill = userData.skills[mainSkill]
+						}else{
+							var userMainSkill = false
+						}
+						renderSkill(Object.keys(allSkills)[idx], userMainSkill)
+						Object.keys(mainSkill).forEach(function(subSkill, idx){
+							if(userMainSkill){
+								var userSubSkill = userData.skills[mainSkill][subSkill]
+							}else{
+								var userSubSkill = false
+							}
+							
+							renderSkill(subSkill, userSubSkill)
+						})
+					})
+				})
+				//render skills
+
+				function renderSkill(title, checked){
+					var skillDiv = document.createElement('div')
+					skillDiv.classList.add('skill')
+					document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
+
+					var checkmark = document.createElement('input')
+					checkmark.type = 'checkbox'
+					checkmark.classList.add('checkmark')
+					checkmark.checked = checked
+					skillDiv.appendChild(checkmark)	
+
+					var titleP = document.createElement('p')
+					titleP.innerText = title
+					titleP.classList.add('skill')
+					skillDiv.appendChild(titleP)	
+				}
+
+				//render Projects
+
+				if(userData.projects){
+					Object.values(userData.projects).forEach(function(project, idx){
+						renderProjects(project.title, project.description, project.link)
+					})
+				}
+
+				//- }catch(e){
+
+				//- }
+
+			})
+		})
+
+
+		function renderProject(title, description, link){
+			var wrapperDiv = document.createElement('div')
+			wrapperDiv.classList.add('skill')
+			document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
+
+			var titleDiv = document.createElement('input')
+			titleDiv.classList.add('title')
+
+			if(title){titleDiv.value = title}
+			titleDiv.placeholder = 'title'
+			document.getElementById('user-projects').querySelector('.wrapper').appendChild(titleDiv)
+
+			var descriptionDiv = document.createElement('input')
+			descriptionDiv.classList.add('description')
+			if(description){descriptionDiv.value = description}
+			descriptionDiv.placeholder = 'description'
+			document.getElementById('user-projects').querySelector('.wrapper').appendChild(descriptionDiv)
+
+			var linkEl = document.createElement('input')
+			linkEl.classList.add('link')
+			if(link){linkEl.value = link}
+			linkEl.placeholder = 'link'
+			document.getElementById('user-projects').querySelector('.wrapper').appendChild(linkEl)
+		}
+
+		
+
+
+
+		
