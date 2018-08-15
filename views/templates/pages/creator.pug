@@ -2,7 +2,7 @@ extends ../index
 block mainContent
 
 	.profile-wrapper
-		.action-button#profile-action-button
+		.action-button.display-none#profile-action-button
 		.profile-info
 			.image
 			h2.name#user-name
@@ -28,7 +28,7 @@ block mainContent
 
 			document.getElementById('user-name').innerText = userData.firstName + ' ' + userData.lastName
 			document.getElementById('user-description').innerText = userData.description
-			document.getElementById('user-location').innerText = userData.location.city + ', ' + userData.location.country
+			document.getElementById('user-location').innerText = userData.city + ', ' + userData.country
 
 			//render skills
 
@@ -50,7 +50,7 @@ block mainContent
 
 			function renderProjects(title, description, link){
 				var wrapperDiv = document.createElement('div')
-				wrapperDiv.classList.add('skill')
+				wrapperDiv.classList.add('project')
 				document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
 
 				var titleDiv = document.createElement('h2')
@@ -79,12 +79,15 @@ block mainContent
 
 
 		})
-
-		if(currentUserUid == userId){
-			document.getElementById('profile-action-button').innerText = 'Edit'
-		}else{
-			document.getElementById('profile-action-button').innerText = 'Add Friend'
+		if(firebase.auth().currentUser){
+			document.getElementById('profile-action-button').classList.remove('display-none')
+			if(firebase.auth().currentUser.uid == userId){
+				document.getElementById('profile-action-button').innerText = 'Edit'
+			}else{
+				document.getElementById('profile-action-button').innerText = 'Add Friend'
+			}
 		}
+		
 
 		
 
