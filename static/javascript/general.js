@@ -16,7 +16,7 @@ function _(id){
 
 //Get class
 function __(eClass){
-	return document.querySelectorAll(eClass)
+	return document.querySelectorAll('.' + eClass)
 }
 //Current Firebase user
 function currentUser(){

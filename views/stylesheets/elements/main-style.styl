@@ -1,0 +1,29 @@
+header.signed-in
+	background $darkgrey
+	color white
+	display flex
+	padding 20px 60px
+	align-items center
+	text-align center
+	
+	h1
+		font-weight lighter
+		flex 1
+		
+		span
+			font-weight initial
+	#menu
+		.menu-row
+			width 30px
+			height 3px
+			background white
+			margin 6px 0
+			transition .5s
+		.menu-shown
+			.menu-row
+				&:nth-child(1)
+					transform rotate(45deg) translate(50%, 50%)
+				&:nth-child(2)
+					opacity 0
+				&:nth-child(3)
+					transform rotate(-45deg) translate(50%, 50%)

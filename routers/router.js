@@ -12,7 +12,7 @@ module.exports = (function() {
   
   //Array with pages
   var routes = [
-    {page:'start', path:'/'},
+    {page:'home', path:'/'},
     {page:'signup'},
     {page:'signin'},
     {page:'editcreator'},

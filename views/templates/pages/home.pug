@@ -1,0 +1,110 @@
+extends ../index
+block pageStatus
+	- var signedOutPage = true;
+
+block mainContent
+	header
+		video.video-background(poster='images/thumbnail.png' playbackRate='3.0' autoplay loop muted)
+			source(src='../videos/fleet-blured.mp4' type="video/mp4")
+		.big-logo
+		h2.title Fleet is a platform for <strong>young creators</strong> to meet, collaborate and develop.
+		.signup-wrapper
+			input(type='email' placeholder='Email')#email-list-input
+			.submit-btn(onclick='addToEmailList("#email-list-input")') Subscribe
+		.status Coming soon
+		a(href='https://www.youtube.com/watch?v=XrLtvg7xK0w' target='_blank').video-link
+			img(src='../images/youtube-logo.png')
+			div Watch our promo here
+	section.darker
+		h3#vision Our vision
+		p The Internet has created a world of possibilities to develop new creative skills for youths. We at Fleet want to take it to the next level. We want to help young creators come together to create as a unit. Our mission is to take you through the first steps of your career. We want to create a <em>fleet of creators</em>.
+	section
+		.images
+			img#plx-img(src='../images/mac-meet.png')
+			//- img.plx-img(src='../images/search-page-design.png')
+
+		article
+			h6 Build your teams
+			h3.section-headline Meet other creators
+			.content-wrapper
+				p Search, find and form teams with other creators from all skillsets.
+				ul
+					li Find other young creators.
+					li Build perfect teams with people from all creative areas.
+					li Search by category, name or already existing groups.
+					li Join and create groups.
+
+	section.darker
+		article
+			h6 Create together
+			h3.section-headline Start projects
+			.content-wrapper
+				p Creation should be as easy as 1, 2, 3. With Fleet, will be able to collaborate and start their own projects together.
+				ul
+					li Create new content.
+					li Collaborate.
+					li Take your vision to new heights.
+		.images
+			img#plx-img(src='../images/mac-start.png')
+
+	section
+		.images
+			img#plx-img(src='../images/mac-share.png')
+			//- img.plx-img(src='../images/search-page-design.png')
+
+		article
+			h6 Share your portfolio
+			h3.section-headline Share your skills
+			.content-wrapper
+				p Your skills are important, show them off in your own portfolio.
+				ul
+					li Learn as you use Fleet.
+					li Build a stronger portfolio.
+					li Add your work from projects.
+
+	section#subscribe-section.darker
+		.section-wrapper
+			h3 Be the first to know
+			ul
+				li Be one of the first creators to use our platform
+				li Give us feedback and solve problems with us
+				li Receive exclusive news
+			p Does this sound great? Add yourself to our mailing list now.
+
+			input#email-list-input2(placeholder="Email")
+			.submit-btn(onclick='addToEmailList("#email-list-input2")') Subscribe
+
+			p.small-text or email us at
+			p.email info@fleetofcreators.com
+
+	footer
+		p Follow our journey
+		.sm-wrapper
+			a(href='https://instagram.com/fleetofcreators/' target='_blank')#instagram
+			a(href='https://www.youtube.com/channel/UCj0_rBK5sNACRmBrTVHgkjQ' target='_blank')#youtube
+			a(href='https://twitter.com/fleetofcreators' target='_blank')#twitter
+			a(href='https://facebook.com/fleetofcreators' target='_blank')#facebook
+		p @fleetofcreators
+
+
+	script.
+		function addToEmailList(emailInput){
+			var email = document.querySelector(emailInput).value
+			if(!validateEmail(email)){
+				alert('Felaktig email')
+				return
+			}
+			firebase.database().ref('emailList/' + email.replace(/\./g, '%2E')).set({
+				email: email,
+				date: (new Date()).getTime(),
+				//- country: country,
+				//- region: region,
+			}).then(function(){
+				popUp('Thank you, you will hear from us soon!')
+				document.querySelector(emailInput).value = ''
+			})
+			//- $.getJSON("http://freegeoip.net/json/", function (data) {
+			//- 	var country = data.country_name
+			//- 	var region = data.region_name
+			//- });
+		}

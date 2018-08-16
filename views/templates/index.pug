@@ -27,5 +27,33 @@ html
 
 
 	body(data-page=dataPage)
-		.main-content
-			block mainContent
+		block pageStatus
+
+		if !signedOutPage
+			header.signed-in
+				.small-logo
+				h1 <span>fleet</span>ofcreators
+				#menu(onclick='toggleMenu()')
+					.menu-row
+					.menu-row
+					.menu-row
+			.main-content
+				block mainContent
+		else
+			.main-content
+				block mainContent
+
+		script.
+			var menuShown
+			function toggleMenu(){
+				console.log(menuShown)
+				if(!menuShown){
+					_('menu').classList.add('menu-shown')
+				console.log(menuShown)
+				}else if(menuShown){
+					_('menu').classList.remove('menu-shown')
+				console.log(menuShown)
+				}
+				menuShown = !menuShown
+				console.log(menuShown)
+			}
