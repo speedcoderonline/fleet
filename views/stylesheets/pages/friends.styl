@@ -1,0 +1,104 @@
+[data-page='friends']
+	
+	.main-content
+		overflow auto
+		background $light-grey
+		min-height calc(100vh - 79px)
+		
+		header
+			padding 60px 0
+			background #383D41
+			border-image gradient(linear, left top, left bottom, from(#00abeb), to(#fff), color-stop(0.5, #fff), color-stop(0.5, #66cc00)) 21 30 30 21 repeat repeat;
+			text-align center
+			.option
+				display inline-block
+				vertical-align top
+				color white
+				margin-right 70px
+				position relative
+				
+				&:last-child
+					margin-right 0
+				.icon
+					height 80px
+					width 80px
+					margin auto
+					background-size contain
+					background-position center center
+					background-repeat no-repeat
+				p.title
+					font-size 16px
+					text-align center
+				
+				.notafication
+					background $pink
+					text-align center
+					font-size 16px
+					height 16px
+					width 16px
+					border-radius 50%
+					padding 2px 5px 8px 5px
+					position absolute
+					top 0
+					right 0
+
+					
+				&#friends
+					.icon
+						background-image url("../icons/friends.png")
+						
+				&#messages
+					.icon
+						background-image url("../icons/messages.png")
+				
+				&#requests
+					.icon
+						background-image url("../icons/check.png")
+					
+		section
+			width 90%
+			max-width 1090px
+			margin auto
+			margin-top 30px
+				
+			.title
+				font-size 18px
+				margin-bottom 10px
+			.content
+				.item
+					display inline-block
+					margin-right 22px
+					padding 20px
+					border-top solid 15px $team-grey
+					box-shadow -4px 20px 40px rgba(black,.08)
+					width 250px
+					height 250px
+					background white
+					
+					.images
+						width max-content
+						margin auto
+						padding-right 35px
+						margin-bottom 10px
+						.frame
+							height 70px
+							width 35px
+							position relative
+							display inline-block
+							.image
+								height 70px
+								width 70px
+								border-radius 50%
+								background $purple
+
+					h5.title
+						font-size 15px
+						text-align center
+						margin-bottom 0
+						
+					p.description
+						text-align center
+						font-size 18px
+						line-height 135%
+
+			

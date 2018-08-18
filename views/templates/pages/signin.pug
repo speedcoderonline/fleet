@@ -39,7 +39,7 @@ block mainContent
 						break
 					}
 				}).then(function(){
-					if(currentUser()){
+					if(firebase.auth().currentUser){
 						window.location.replace('/')
 					}
 				})
