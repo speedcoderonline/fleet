@@ -10,6 +10,22 @@ const admin = require('firebase-admin')
 // Initiate App
 const app = express()
 
+
+//force ssl
+
+env = process.env.NODE_ENV || 'development';
+
+var forceSsl = function (req, res, next) {
+	if (req.headers['x-forwarded-proto'] !== 'https') {
+		return res.redirect(['https://', req.get('Host'), req.url].join(''));
+	}
+	return next();
+};
+
+if (env === 'production') {
+	app.use(forceSsl);
+}
+
 // Firebase
 var serviceAccount = require("./fleet-7cb48-firebase-adminsdk-73xdg-45db96141a.json");
 
