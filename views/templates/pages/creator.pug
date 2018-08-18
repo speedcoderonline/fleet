@@ -2,19 +2,20 @@ extends ../index
 block mainContent
 
 	.profile-wrapper
-		.action-button.display-none#profile-action-button
-		.profile-info
-			.image
+		header
+			.action-button.display-none#profile-action-button
 			h2.name#user-name
+			.image
+		.profile-info
 			p.description#user-description
 			.location
 				.location-symbol
-				h3.location-name#user-location
+				p.location-name#user-location
 			.skills#user-skills
 				h4.title Knowledge
 				.wrapper
 			.projects#user-projects
-				h4.title What I have done
+				h4.title Portfolio
 				.wrapper
 
 
@@ -39,36 +40,49 @@ block mainContent
 				document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
 			}
 
-			Object.values(userData.skills).forEach(function(mainSkill, idx){
-				renderSkill(Object.keys(userData.skills)[idx])
-				Object.keys(mainSkill).forEach(function(subSkill, idx){
-					renderSkill(subSkill)
+			firebase.database().ref('skills/').once("value", function(snapshot){
+				Object.values(userData.skills).forEach(function(mainSkill, idx){
+					renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'])
+					Object.keys(mainSkill).forEach(function(subSkill, idx2){
+						renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
+					})
 				})
 			})
+
+			
 
 			//render Projects
 
 			function renderProjects(title, description, link){
-				var wrapperDiv = document.createElement('div')
+				if(link){
+					var wrapperDiv = document.createElement('a')
+					wrapperDiv.classList.add('link')
+				}else{
+					var wrapperDiv = document.createElement('div')
+				}
 				wrapperDiv.classList.add('project')
 				document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
 
-				var titleDiv = document.createElement('h2')
+				var imageDiv = document.createElement('div')
+				imageDiv.classList.add('image')
+				wrapperDiv.appendChild(imageDiv)
+
+				var contentDiv = document.createElement('div')
+				contentDiv.classList.add('content')
+				wrapperDiv.appendChild(contentDiv)
+
+				var titleDiv = document.createElement('h5')
 				titleDiv.classList.add('title')
 				titleDiv.innerText = title
-				document.getElementById('user-projects').querySelector('.wrapper').appendChild(titleDiv)
+				contentDiv.appendChild(titleDiv)
 
 				var descriptionDiv = document.createElement('p')
-				descriptionDiv.classList.add('description')
+				descriptionDiv.classList.add('p-description')
 				descriptionDiv.innerText = description
-				document.getElementById('user-projects').querySelector('.wrapper').appendChild(descriptionDiv)
+				contentDiv.appendChild(descriptionDiv)
 
 				if(link){
-					var linkEl = document.createElement('a')
-					linkEl.classList.add('link')
-					linkEl.innerText = link
-					linkEl.href = link
-					document.getElementById('user-projects').querySelector('.wrapper').appendChild(linkEl)
+					wrapperDiv.href = link
 				}
 				
 			}

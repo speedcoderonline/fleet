@@ -1,23 +1,149 @@
 [data-page='creator']
 	
 	.main-content
-		background $grey
 		overflow auto
+		background $light-grey
+		min-height calc(100vh - 79px)
 
 		.profile-wrapper
-			margin 30px
-			padding 50px
-			background white
-			box-shadow 0 0 2px black
+			font-weight light
+			text-align center
 			position relative
 			
-			.action-button
-				position absolute
-				left 0
-				top 0
-				background linear-gradient(to right, #97A0D1, #D48F89)
-				padding 15px
-				cursor pointer
+			header
+				background linear-gradient(to right, #A3C0C4, #7CABB1)
+				position relative
+				//.action-button
+				h2.name
+					padding-top 80px
+					padding-bottom 100px
+					text-align center
+					color white
+					font-size 100%
+					font-size 35px
+				.image
+					position absolute
+					left 50%
+					bottom 0px
+					transform translate(-50%, 60%)
+					width 100px
+					height 100px
+					border-radius 50%
+					background $purple
+					box-shadow 0 0 5px rgba(black,.2)
+					
+			
+				// .action-button
+				// 	position absolute
+				// 	left 0
+				// 	top 0
+				// 	background linear-gradient(to right, #97A0D1, #D48F89)
+				// 	padding 15px
+				// 	cursor pointer
+			
+			.profile-info
+				width 90%
+				max-width 800px
+				margin auto
+				padding-top 60px
+				p.description
+					text-align center
+					margin-top 15px
+					margin-bottom 5px
+					line-height 1.3
+				.location
+					font-size 90%
+					text-align center
+					
+					*
+						vertical-align bottom
+						
+					.location-symbol
+						display inline-block
+						height 20px
+						width 13px
+						background-image url("../icons/location.png")
+						background-size contain
+						background-repeat no-repeat
+					p.location-name
+						display inline-block
+						margin-left 7px
+				h4.title
+					font-size 20px
+					margin-top 22px
+					font-weight lighter
+					margin-bottom 10px
+				.skills
+					.wrapper
+						.skill
+							background linear-gradient(to right, #97A0D1, #D48F89)
+							padding 15px 0
+							width 160px
+							color white
+							display inline-block
+							margin 7px
+							border-radius 8px
+							box-shadow -2px 5px 15px rgba(black,.15)
+						
+				.projects
+					.wrapper
+						.project
+							display block
+							color black
+							padding 15px 25px
+							text-align left
+							margin 10px auto
+							width calc(100% - 20px)
+							position relative
+							transition all .17s ease-in-out
+							
+							&::before
+								content:''
+								height 1px !important
+								width 50%
+								background #979797
+								display block
+								position absolute
+								top 0
+								left 50%
+								transform translateX(-50%)
+							
+							*
+								vertical-align top
+								
+							&:first-child
+								&::before
+									display none
+							
+							&.link
+							
+								&:hover
+									box-shadow 6px 7px 18px rgba(black,.5)
+									transform translateY(-5px)
+									
+									&::before
+										opacity 0
+								
+								
+								
+							.image
+								display inline-block
+								height 100px
+								width calc(100px * (16/9))
+								background $grey
+								margin auto
+								
+							.content
+								display inline-block
+								text-align left
+								margin 8px 15px
+								
+								.title
+									font-size 17px
+									font-weight bold
+								
+								.p-description
+									font-size 17px
 				
 				
 			// .profile-info
