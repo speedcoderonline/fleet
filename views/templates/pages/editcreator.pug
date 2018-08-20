@@ -1,24 +1,49 @@
 extends ../index
 block mainContent
 
+	.save-button.display-none#save-button(onclick = 'saveEdits()') Save
+
 	.profile-wrapper
-		.save-button#save-button(onclick = 'saveEdits()') save
+
 		.profile-info
-			.image
-			input.fist-name#first-name(placeholder='First name')
-			input.last-name#last-name(placeholder='Last name')
-			input.description#user-description(placeholder='User description')
-			.location#user-location
-				input.country(placeholder='Country')
-				input.city(placeholder='City')
-			//input#location-search(placeholder = 'Your city')
-			.skills#user-skills
-				h4.title Skills
-				.wrapper
-			.projects#user-projects
-				h4.title What I have done
-				.wrapper
-				.add-new(onclick='newProject()') Add
+
+			.non-autosave
+				.image
+				section.name
+					h4.title Name
+					input.text-input.first-name#first-name(placeholder='First name' onkeydown='changesMade()')
+					input.text-input.last-name#last-name(placeholder='Last name' onkeydown='changesMade()')
+				section.description
+					h4.title Description
+					.long-input#user-description(contenteditable='true' placeholder='User description' onkeydown='changesMade()')
+
+				section.location#user-location
+					h4.title Location
+					input.text-input.country(placeholder='Country' onkeydown='changesMade()')
+					input.text-input.city(placeholder='City' onkeydown='changesMade()')
+				//input#location-search(placeholder = 'Your city')
+				
+			section.skills#user-skills
+				h4.title Competenses
+				.my-wrapper
+				.potential-wrapper
+					header(onclick='_("user-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
+						.title Add competens
+						.expand
+					.content
+			section.projects#user-projects
+				h4.title Experiences
+				.edit-wrapper
+					.image-picker
+					.wrapper
+						input.text-input.info.title#project-title(placeholder='Title')
+						input.text-input.info.link#project-link(placeholder='Link (optional)')
+					.long-input#project-description(contenteditable='true' placeholder='Description')
+
+					.save.action-btn#project-save(onclick='saveProject()') Add
+					.delete.action-btn.display-none#project-delete(onclick='deleteProject()') Delete
+				.content-wrapper
+			//	.add-new(onclick='newProject()') Add
 
 	
 
@@ -30,12 +55,19 @@ block mainContent
 		var startCity
 		var userSkills
 		var saveLocation
+		var renderAllSkills
+		var renderAllProjects
+		var currentProjectId = (new Date).getTime()
+
+		function changesMade(){
+			_('save-button').classList.remove('display-none')
+		}
 
 		//action-button -> edit or add friend
 		firebase.auth().onAuthStateChanged(function(user) {
 			firebase.database().ref('users/creators/' + currentUser().uid).once("value", function(snapshot){
 				var userData = snapshot.val()
-				userSkills = userData.skills
+				userSkills = userData.skills || {}
 
 				startCountry = userData.country
 				startCity = userData.city
@@ -83,96 +115,131 @@ block mainContent
 					startCountry = country
 					startCity = city
 				}
-			
-				
 
-				firebase.database().ref('skills').once("value", function(snapshot){
-					var allSkills = snapshot.val()
+				renderAllSkills =  function(userSkills){
+					firebase.database().ref('skills').once("value", function(snapshot){
 
-					Object.values(allSkills).forEach(function(mainSkill, idx){
-						var mainSkillId = Object.keys(allSkills)[idx]
-						if(userData.skills){
-							var userMainSkill = userData.skills[mainSkillId]
-						}else{
-							var userMainSkill = false
-						}
-						renderSkill(Object.values(allSkills)[idx].name, mainSkillId, userMainSkill, true)
-						Object.values(mainSkill.subSkills).forEach(function(subSkill, idx2){
-							var subSkillId = Object.keys(mainSkill.subSkills)[idx2]
-							if(userMainSkill){
-								var userSubSkill = userData.skills[mainSkillId][subSkillId]
+						[document.getElementById('user-skills').querySelector('.my-wrapper'), document.getElementById('user-skills').querySelector('.potential-wrapper').querySelector('.content')].forEach(function(el){
+							while (el.firstChild) {
+								el.removeChild(el.firstChild);
+							}
+						})
+
+						var allSkills = snapshot.val()
+
+						Object.values(allSkills).forEach(function(mainSkill, idx){
+							var mainSkillId = Object.keys(allSkills)[idx]
+							if(userSkills){
+								var userMainSkill = userSkills[mainSkillId]
 							}else{
-								var userSubSkill = false
+								var userMainSkill = false
+							}
+							renderSkill(Object.values(allSkills)[idx].name, mainSkillId, userMainSkill, true)
+
+							if(userMainSkill){
+								Object.values(mainSkill.subSkills).forEach(function(subSkill, idx2){
+									var subSkillId = Object.keys(mainSkill.subSkills)[idx2]
+									if(userMainSkill){
+										var userSubSkill = userSkills[mainSkillId][subSkillId]
+									}else{
+										var userSubSkill = false
+									}
+									
+									renderSkill(subSkill.name, subSkillId, userSubSkill, false, mainSkillId)
+								})
 							}
 							
-							renderSkill(subSkill.name, subSkillId, userSubSkill, false, mainSkillId)
 						})
 					})
-				})
-				//render skills
+					//render skills
 
-				function renderSkill(title, id, checked, isMainSkill, mainSkillId){
-					var skillDiv = document.createElement('div')
-					skillDiv.classList.add('skill')
-					document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
+					function renderSkill(title, id, checked, isMainSkill, mainSkillId){
+						var skillDiv = document.createElement('div')
+						skillDiv.classList.add('skill')
+						document.getElementById('user-skills').querySelector('.potential-wrapper').querySelector('.content').appendChild(skillDiv)
 
-					var checkmark = document.createElement('input')
-					checkmark.type = 'checkbox'
-					checkmark.dataset.skillId = id
-					checkmark.id = id
-					checkmark.dataset.isMainSkill = isMainSkill
-					checkmark.dataset.mainSkillId = mainSkillId
-					checkmark.classList.add('checkmark')
-					checkmark.checked = checked
-					if(!isMainSkill){checkmark.classList.add('main-' + mainSkillId)}
-					skillDiv.appendChild(checkmark)
+						var checkmark = document.createElement('input')
+						checkmark.type = 'checkbox'
+						checkmark.dataset.skillId = id
+						checkmark.id = id
+						checkmark.dataset.isMainSkill = isMainSkill
+						checkmark.dataset.mainSkillId = mainSkillId
+						checkmark.classList.add('checkmark')
+						checkmark.checked = checked
+						if(!isMainSkill){checkmark.classList.add('main-' + mainSkillId)}
+						skillDiv.appendChild(checkmark)
 
-					checkmark.onclick = function(el){
+						checkmark.onclick = function(el){
 
-						if(el.target.dataset.isMainSkill == 'true'){
-							if(!el.target.checked) document.querySelectorAll('.main-' + el.target.dataset.skillId).forEach(function(el2){
-								el2.checked = false
+							//- if(el.target.dataset.isMainSkill == 'true'){
+							//- 	if(!el.target.checked) document.querySelectorAll('.main-' + el.target.dataset.skillId).forEach(function(el2){
+							//- 		el2.checked = false
+							//- 	})
+							//- 	userSkills[el.target.dataset.skillId] = el.target.checked || null
+							//- }else{
+							//- 	if(!_(el.target.dataset.mainSkillId).checked){
+							//- 		el.target.checked = false
+							//- 		return
+							//- 	}
+
+							//- 	if(typeof(userSkills[el.target.dataset.mainSkillId]) == "boolean"){
+							//- 		userSkills[el.target.dataset.mainSkillId] = {}
+							//- 	}
+							//- 	userSkills[el.target.dataset.mainSkillId][el.target.dataset.skillId] = el.target.checked || null
+
+							//- 	if(typeof(userSkills[el.target.dataset.mainSkillId]) !== "boolean"){
+
+							//- 		var onlyNull = true
+
+							//- 		Object.values(userSkills[el.target.dataset.mainSkillId]).forEach(function(val){
+							//- 			if(val !== null){onlyNull = false}
+							//- 		})
+
+							//- 		if(onlyNull){
+							//- 			userSkills[el.target.dataset.mainSkillId] = true
+							//- 		}
+							//- 	}
+							//- }
+							//- console.log(userSkills)
+
+							if(el.target.dataset.isMainSkill == 'true'){
+								var skillPath = el.target.dataset.skillId
+							}else{
+								var skillPath = el.target.dataset.mainSkillId + '/' + el.target.dataset.skillId
+							}
+
+							firebase.database().ref('users/creators/' + currentUser().uid + '/skills/' + skillPath).set(el.target.checked).then(function(){
+								reRenderAllSkills()
 							})
-							userSkills[el.target.dataset.skillId] = el.target.checked || null
-						}else{
-							if(!_(el.target.dataset.mainSkillId).checked){
-								el.target.checked = false
-								return
-							}
+							
+						}	
 
-							if(typeof(userSkills[el.target.dataset.mainSkillId]) == "boolean"){
-								userSkills[el.target.dataset.mainSkillId] = {}
-							}
-							userSkills[el.target.dataset.mainSkillId][el.target.dataset.skillId] = el.target.checked || null
+						var titleP = document.createElement('p')
+						titleP.innerText = title
+						titleP.classList.add('title')
+						if(isMainSkill){titleP.style.fontWeight = "500"}
+						skillDiv.appendChild(titleP)
 
-							if(typeof(userSkills[el.target.dataset.mainSkillId]) !== "boolean"){
-
-								var onlyNull = true
-
-								Object.values(userSkills[el.target.dataset.mainSkillId]).forEach(function(val){
-									if(val !== null){onlyNull = false}
-								})
-
-								if(onlyNull){
-									userSkills[el.target.dataset.mainSkillId] = true
-								}
-							}
+						if(checked){
+							var enabledSkillDiv = skillDiv.cloneNode(true)
+							document.getElementById('user-skills').querySelector('.my-wrapper').appendChild(enabledSkillDiv)
+							enabledSkillDiv.querySelector('.checkmark').onclick = checkmark.onclick
 						}
-						console.log(userSkills)
-					}	
-
-					var titleP = document.createElement('p')
-					titleP.innerText = title
-					titleP.classList.add('skill')
-					skillDiv.appendChild(titleP)	
+					}
 				}
+
+				renderAllSkills(userData.skills)
 
 				//render Projects
 
-				if(userData.projects){
-					Object.values(userData.projects).forEach(function(project, idx){
-						renderProject(project.id, project.title, project.description, project.link)
+				renderAllProjects = function(userProjects){
+					Object.values(userProjects).forEach(function(project, idx){
+						renderProject(Object.keys(userProjects)[idx], project.title, project.description, project.link)
 					})
+				}
+
+				if(userData.projects){
+					renderAllProjects(userData.projects)
 				}
 
 				//- }catch(e){
@@ -185,32 +252,43 @@ block mainContent
 
 		function renderProject(id, title, description, link){
 			var wrapperDiv = document.createElement('div')
-			wrapperDiv.classList.add('skill')
-			document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
+			wrapperDiv.classList.add('project')
+			document.getElementById('user-projects').querySelector('.content-wrapper').appendChild(wrapperDiv)
 			wrapperDiv.dataset.id = id
+
+			var imageDiv = document.createElement('div')
+			imageDiv.classList.add('image')
+			//if(image){imageDiv.innerText = image}
+			wrapperDiv.appendChild(imageDiv)
+
+			var textWrapperDiv = document.createElement('div')
+			textWrapperDiv.classList.add('text-wrapper')
+			wrapperDiv.appendChild(textWrapperDiv)
 
 			var titleDiv = document.createElement('p')
 			titleDiv.classList.add('title')
 			if(title){titleDiv.innerText = title}
-			wrapperDiv.appendChild(titleDiv)
+			textWrapperDiv.appendChild(titleDiv)
 
 			var descriptionDiv = document.createElement('p')
 			descriptionDiv.classList.add('description')
 			if(description){descriptionDiv.innerText = description}
-			wrapperDiv.appendChild(descriptionDiv)
+			textWrapperDiv.appendChild(descriptionDiv)
 
 			var linkEl = document.createElement('p')
 			linkEl.classList.add('link')
+			linkEl.classList.add('display-none')
 			if(link){linkEl.innerText = link}
 			wrapperDiv.appendChild(linkEl)
 
-			var editEl = document.createElement('div')
-			editEl.classList.add('editBtn')
-			editEl.innerText = 'Edit'
-			wrapperDiv.appendChild(editEl)
-			editEl.onclick = function(event){
-				var id = event.target.parentElement.dataset.id
-				window.location = '/editproject/' + id
+			wrapperDiv.onclick = function(event){
+				currentProjectId = event.currentTarget.dataset.id
+				_('project-title').value = event.currentTarget.querySelector('.text-wrapper').querySelector('.title').innerText
+				_('project-description').innerText = event.currentTarget.querySelector('.text-wrapper').querySelector('.description').innerText
+				_('project-link').value = event.currentTarget.querySelector('.link').innerText
+				_('project-delete').classList.remove('display-none')
+				event.currentTarget.classList.add('display-none')
+				_('project-save').innerText = 'Save'
 			}
 		}
 
@@ -223,6 +301,15 @@ block mainContent
 				link: ""
 			}).then(function(){
 				window.location = '/editproject/' + projectId
+			})
+		}
+
+		function reRenderAllSkills(){
+			
+			firebase.database().ref('users/creators/' + currentUser().uid + '/skills').once("value", function(snapshot){
+
+				userSkills = snapshot.val()
+				renderAllSkills(userSkills)
 			})
 		}
 
@@ -241,6 +328,55 @@ block mainContent
 			if(startCity != _('user-location').querySelector('.city').value || startCountry !== _('user-location').querySelector('.country').value){
 				saveLocation()
 			}
+		}
+
+		function deleteProject(){
+			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + currentProjectId).remove().then(function(){
+				_('project-title').value = ''
+				_('project-description').innerText = ''
+				_('project-link').value = ''
+				currentProjectId = (new Date).getTime()
+
+				var content = document.getElementById('user-projects').querySelector('.content-wrapper')
+				while (content.firstChild) {
+					content.removeChild(content.firstChild);
+				}
+
+				firebase.database().ref('users/creators/' + currentUser().uid + '/projects').once("value", function(snapshot){
+					userProjects = snapshot.val()
+					renderAllProjects(userProjects)
+					popUp('removed.')
+					_('project-delete').classList.add('display-none')
+					_('project-save').innerText = 'Add'
+				})
+			})
+		}
+
+		function saveProject(){
+			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + currentProjectId).set({
+				title: _('project-title').value,
+				description: _('project-description').innerText,
+				link: _('project-link').value
+			}).then(function(){
+				_('project-title').value = ''
+				_('project-description').innerText = ''
+				_('project-link').value = ''
+				currentProjectId = (new Date).getTime()
+
+				var content = document.getElementById('user-projects').querySelector('.content-wrapper')
+				while (content.firstChild) {
+					content.removeChild(content.firstChild);
+				}
+
+				firebase.database().ref('users/creators/' + currentUser().uid + '/projects').once("value", function(snapshot){
+					userProjects = snapshot.val()
+					renderAllProjects(userProjects)
+					popUp('Saved.')
+					_('project-delete').classList.add('display-none')
+					_('project-save').innerText = 'Add'
+				})
+			})
+			
 		}
 
 	//- script.

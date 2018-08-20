@@ -1,0 +1,276 @@
+[data-page='editcreator']
+	
+	.main-content
+		overflow auto
+		background #4A4D4F
+		min-height calc(100vh - 79px)
+		color white
+		
+		.text-input, .long-input
+			background $lighter-grey
+			color $grey
+			width 100%
+			box-sizing border-box
+			cursor text
+			background $lighter-grey
+			height auto
+			padding 13px
+			font-size 15px
+			border-radius 4px
+			border-width 0
+		
+		.long-input
+			
+			&:empty:before
+				content attr(placeholder)
+				color rgba(black, .6)
+				font-size 17px
+		
+		.save-button
+			background $cyan
+			padding 11px 0
+			width 150px
+			color white
+			margin 20px
+			font-size 18px
+			border-radius 8px
+			text-align center
+			position fixed
+			bottom 0 
+			right 0
+			box-shadow -2px 5px 15px rgba(black,.15)
+			z-index 100
+			cursor pointer
+			
+			@media(max-width 500px)
+				width calc(100% - 20px*2)
+				
+
+		.profile-wrapper
+			padding 60px 10px
+			max-width 500px
+			margin auto
+			
+			@media(max-width 500px)
+				padding 40px 20px
+			
+			.profile-info
+				
+				h4.title
+					font-size 12px
+					margin 0 20px
+					margin-bottom 6px
+							
+				.non-autosave
+					.image
+						height 80px
+						width 80px
+						border-radius 50%
+						background $light-grey
+						margin auto
+						position relative
+						
+						&::before
+							content:'+'
+							background linear-gradient(140deg, #97A0D1, #D48F89)
+							display block
+							position absolute
+							bottom 0
+							right 0
+							color white
+							padding-bottom 2px
+							border-radius 50%
+							font-size 30px
+							width 38px
+							height 36px
+							text-align center
+
+					section
+						
+						&::before
+							display none
+							
+						margin-top 17px
+						h4.title
+							text-align center
+						
+						input.first-name, input.last-name, input.country, input.city
+							width 49.5%
+							display inline-block
+						
+						input.first-name, input.country
+							margin-right 1%
+				
+				section
+					margin-top 20px
+					padding-top 15px
+					position relative
+					
+					&::before
+						content:''
+						height 1px !important
+						width 80%
+						background #979797
+						display block
+						position absolute
+						top 0
+						left 50%
+						transform translateX(-50%)
+					
+					.skill
+					
+						h4.title
+							text-align left
+							font-size 12px
+							margin-left 20px
+							margin-bottom 6px
+					
+					&.skills
+						.skill
+							background linear-gradient(to right, #97A0D1, #D48F89)
+							padding 15px 0
+							width 160px
+							display inline-block
+							margin 7px
+							border-radius 8px
+							box-shadow -2px 5px 15px rgba(black,.15)
+							text-align center
+							width: calc(33% - 14px);
+							
+							@media(max-width 500px)
+								width: calc(50% - 14px);
+							
+							*
+								display inline-block
+							.checkmark
+								margin-right 5px
+								overflow hidden
+								border-radius 4px
+							.title
+								color white
+					
+						// .my-wrapper
+							
+						.potential-wrapper
+							margin-top 7px
+							header
+								width 50%
+								background #E6E6E6
+								border-radius 8px
+								padding 18px
+								position relative
+								
+								.title
+									color $grey
+								.expand
+									background-size contain
+									background-position center center
+									background-image url('../icons/smallarrow.png')
+									background-repeat no-repeat
+									height 12px
+									width 12px
+									position absolute
+									right 18px
+									top 50%
+									transform translateY(-50%)
+									
+							.content
+								display none
+								background $lighter-grey
+								border-radius 0px 8px 8px 8px
+								position relative
+								padding 7px
+							
+							&.expanded
+								header
+									border-radius 8px 8px 0px 0px
+									
+									.expand
+										transform translateY(-50%) rotate(180deg)
+								
+								.content
+									display block
+					
+
+					&.projects
+						.edit-wrapper
+							position relative
+							margin 7px 0
+							
+							*
+								vertical-align top
+							.image-picker
+								height 95px
+								width 95px
+								display inline-block
+								background $lighter-grey
+								border-radius 4px
+								margin-right 7px
+							.wrapper
+								width calc(100% - 95px - 7px)
+								display inline-block
+								input.text-input.info.title
+									margin-bottom 7px
+							.long-input#project-description
+								margin 7px 0
+
+							.action-btn
+								background linear-gradient(to right, #97A0D1, #D48F89)
+								padding 10px 0
+								width 120px
+								margin 7px
+								margin-left 0
+								border-radius 4px
+								text-align center
+								font-weight bold
+								display inline-block
+							//.delete.display-none#project-delete(onclick='deleteProject()') Delete
+						.content-wrapper
+							margin-top 25px
+							.project
+								display block
+								color black
+								padding 15px 25px
+								text-align left
+								margin-bottom 15px
+								width calc(100% - 25px*2)
+								position relative
+								transition all .17s ease-in-out	
+								color $grey
+								background $lighter-grey
+								box-shadow 6px 10px 18px rgba(black,.2)
+								cursor pointer
+								
+								*
+									vertical-align top						
+									
+									
+								.image
+									display inline-block
+									height 100px
+									width calc(100px * (16/9))
+									background $grey
+									margin auto
+									
+									@media(max-width 500px)
+										height 50px
+										width calc(50px * (16/9))
+									
+								.text-wrapper
+									display inline-block
+									text-align left
+									margin 8px 15px
+									
+									@media(max-width 500px)
+										margin 0 8px
+									
+									.title
+										font-size 17px
+										font-weight bold
+									
+									.p-description
+										font-size 15px
+								
+								
+			
+					
