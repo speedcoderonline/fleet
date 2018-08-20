@@ -41,7 +41,6 @@
 					position absolute
 					top 0
 					right 0
-
 					
 				&#friends
 					.icon
@@ -54,26 +53,51 @@
 				&#requests
 					.icon
 						background-image url("../icons/check.png")
+				
+			@media(max-width 700px)
+				padding 25px 0
+				
+				.option
+					margin-right 35px
+					
+					.icon
+						height 40px
+						width 40px
+						margin auto
+						background-size contain
+						background-position center center
+						background-repeat no-repeat
+					p.title
+						font-size 14px
 					
 		section
 			width 90%
 			max-width 1090px
 			margin auto
-			margin-top 30px
+			margin-top 20px
 				
 			.title
 				font-size 18px
 				margin-bottom 10px
+				
+				@media(max-width 700px)
+					font-size 15px
+				
 			.content
+				position relative
 				.item
 					display inline-block
 					margin-right 22px
+					margin-bottom 22px
 					padding 20px
 					border-top solid 15px $team-grey
 					box-shadow -4px 20px 40px rgba(black,.08)
 					width 250px
 					height 250px
 					background white
+					
+					&:last-child
+						margin-right 0						
 					
 					.images
 						width max-content
@@ -90,15 +114,57 @@
 								width 70px
 								border-radius 50%
 								background $purple
+					
+					.text-wrapper
+						text-align center
 
-					h5.title
-						font-size 15px
-						text-align center
-						margin-bottom 0
+						h5.title
+							font-size 15px
+							margin-bottom 0
+							
+						p.description
+							font-size 18px
+							line-height 135%
+					
+					@media(max-width 700px)
+						width calc(100% - 10px*2)
+						margin-right 0
+						position relative
+						border-top solid 5px $team-grey
+						border-radius 8px
+						height 70px
+						padding 10px
+							
+						.images
+							display inline-block
+							vertical-align middle
+							width 20px
+							padding-right 20px
+							margin-bottom 0
+							.frame
+								height 40px
+								width 20px
+								display none
+								
+								&:first-child
+									display block
+									
+								.image
+									height 40px
+									width 40px
 						
-					p.description
-						text-align center
-						font-size 18px
-						line-height 135%
+						.text-wrapper
+							vertical-align middle
+							display inline-block
+							width calc(100% - 40px - 10px)
+							text-align left
+							height 70px
+							overflow hidden
+							margin-left 10px
+								
+							p.description
+								font-size 13px
+								line-height 110%
+						
 
 			
