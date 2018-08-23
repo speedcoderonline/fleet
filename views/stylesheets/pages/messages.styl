@@ -1,0 +1,80 @@
+[data-page='messages']
+	
+	.main-content
+		overflow auto
+		background $light-grey
+		min-height calc(100vh - 79px)
+		
+		@import "elements/connections-menu"
+		
+		.contacts
+			width 250px
+			.contact
+				padding 12px 0
+				.images
+					width max-content
+					margin auto
+					padding-right 35px
+					margin-bottom 10px
+					.frame
+						height 70px
+						width 35px
+						position relative
+						display inline-block
+						.image
+							height 70px
+							width 70px
+							border-radius 50%
+							background $purple
+				h5.title
+					font-size 14px
+					font-weight bold
+					color $grey
+		.chat
+			.messages
+				min-height calc(100vh - 30px)
+				.message
+					.image
+						height 50px
+						width 50px
+						border-radius 50%
+						background-size cover
+						background-position center center
+						display inline-block
+						
+					.content
+						display inline-block
+						p.sender
+							font-weight bold
+							color rgba(black,.5)
+							margin-bottom 10px
+							font-size 13px
+							
+						p.message
+							padding 8px
+							font-size 16px
+							border-radius 4px
+							background rgba(black,.15)
+							color black
+							
+			.write-input
+				position relative
+				height 30px
+				*
+					vertical-align top
+					display inline-block
+				.message-input
+					font-size 20px
+					width calc(100% - 20px - 35px - 20px*2)
+					padding-left 20px
+					
+					&:empty:before
+						content attr(placeholder)
+						color rgba(black, .6)
+						font-size 19px
+				.send-btn
+					font-weight bold
+					color #5F9F9F
+					width 35px
+					padding 0 20px
+		

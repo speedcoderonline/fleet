@@ -1,19 +1,9 @@
 extends ../index
 block mainContent
 
-	header
-		.option#friends
-			.icon
-			p.title Friends
-			.notafication.display-none
-		.option#messages
-			.icon
-			p.title Messages
-			.notafication 1
-		.option#requests
-			.icon
-			p.title Request
-			.notafication.display-none
+	include ../elements/connections-menu.pug
+
+	
 	section
 		h5.title Teams
 		.content

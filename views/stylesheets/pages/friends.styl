@@ -5,70 +5,7 @@
 		background $light-grey
 		min-height calc(100vh - 79px)
 		
-		header
-			padding 60px 0
-			background #383D41
-			border-image gradient(linear, left top, left bottom, from(#00abeb), to(#fff), color-stop(0.5, #fff), color-stop(0.5, #66cc00)) 21 30 30 21 repeat repeat;
-			text-align center
-			.option
-				display inline-block
-				vertical-align top
-				color white
-				margin-right 70px
-				position relative
-				
-				&:last-child
-					margin-right 0
-				.icon
-					height 80px
-					width 80px
-					margin auto
-					background-size contain
-					background-position center center
-					background-repeat no-repeat
-				p.title
-					font-size 16px
-					text-align center
-				
-				.notafication
-					background $pink
-					text-align center
-					font-size 16px
-					height 16px
-					width 16px
-					border-radius 50%
-					padding 2px 5px 8px 5px
-					position absolute
-					top 0
-					right 0
-					
-				&#friends
-					.icon
-						background-image url("../icons/friends.png")
-						
-				&#messages
-					.icon
-						background-image url("../icons/messages.png")
-				
-				&#requests
-					.icon
-						background-image url("../icons/check.png")
-				
-			@media(max-width 700px)
-				padding 25px 0
-				
-				.option
-					margin-right 35px
-					
-					.icon
-						height 40px
-						width 40px
-						margin auto
-						background-size contain
-						background-position center center
-						background-repeat no-repeat
-					p.title
-						font-size 14px
+		@import "elements/connections-menu"
 					
 		section
 			width 90%
