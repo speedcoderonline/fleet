@@ -5,8 +5,25 @@ block mainContent
 
 	
 	.contacts
+		.contact
+			.images
+				.frame
+					.image
+				.frame
+					.image
+				.frame
+					.image
+			h5.title Filmteamet
 	.chat
-		.messages
-		.write-input
-			.message-input(contenteditable='true' placeholder='Write a message here...')
-			.send-btn Send
+		.flex
+			.messages
+				.message
+					.image
+					
+					.content
+						p.sender Erik Enger Karlson
+						p.text Hej hej på er whoot is ouppp
+
+			.write-input
+				.message-input(contenteditable='true' placeholder='Write a message here...')
+				.send-btn Send

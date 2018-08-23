@@ -1,80 +1,116 @@
 [data-page='messages']
 	
 	.main-content
-		overflow auto
+		overflow hidden
 		background $light-grey
-		min-height calc(100vh - 79px)
+		height calc(100vh - 78.5px)
+		
 		
 		@import "elements/connections-menu"
 		
 		.contacts
+			height calc(100vh - 78px - 224px)
 			width 250px
+			display inline-block
+			vertical-align top
+			background $light-grey
+			z-index 20
+			overflow-y scroll
+			box-shadow 0 0 5px rgba(black,.2)
 			.contact
 				padding 12px 0
+				background white
+				border-bottom 1px solid $light-grey
 				.images
 					width max-content
 					margin auto
-					padding-right 35px
+					padding-right 25px
 					margin-bottom 10px
 					.frame
-						height 70px
-						width 35px
+						height 50px
+						width 25px
 						position relative
 						display inline-block
 						.image
-							height 70px
-							width 70px
+							height 50px
+							width 50px
 							border-radius 50%
 							background $purple
 				h5.title
 					font-size 14px
 					font-weight bold
 					color $grey
+					text-align center
 		.chat
-			.messages
-				min-height calc(100vh - 30px)
-				.message
-					.image
-						height 50px
-						width 50px
-						border-radius 50%
-						background-size cover
-						background-position center center
-						display inline-block
-						
-					.content
-						display inline-block
-						p.sender
-							font-weight bold
-							color rgba(black,.5)
-							margin-bottom 10px
-							font-size 13px
+			display inline-block
+			width calc(100vw - 251px)
+			position relative
+			height calc(100vh - 78px - 224px)
+			overflow-y scroll
+			
+			.flex
+				display: flex
+				flex-flow: column
+				
+				.messages
+					flex 2
+					margin-bottom 40px
+					.message
+						margin-left 25px
+						margin-top 15px
+						.image
+							height 35px
+							width 35px
+							border-radius 50%
+							background-size cover
+							background-position center center
+							display inline-block
+							background $purple
+							vertical-align top
+							margin-top 25px
 							
-						p.message
-							padding 8px
-							font-size 16px
-							border-radius 4px
-							background rgba(black,.15)
-							color black
-							
-			.write-input
-				position relative
-				height 30px
-				*
-					vertical-align top
-					display inline-block
-				.message-input
+						.content
+							margin-left 10px
+							display inline-block
+							p.sender
+								font-weight bold
+								color rgba(black,.5)
+								margin-bottom 3px
+								font-size 13px
+								
+							p.text
+								padding 4px 11px 7px
+								font-size 16px
+								border-radius 4px
+								background rgba(black,.06)
+								color black
+								
+				.write-input
+					position absolute
+					bottom 0
+					width 100%
+					min-height 20px
 					font-size 20px
-					width calc(100% - 20px - 35px - 20px*2)
-					padding-left 20px
-					
-					&:empty:before
-						content attr(placeholder)
-						color rgba(black, .6)
-						font-size 19px
-				.send-btn
-					font-weight bold
-					color #5F9F9F
-					width 35px
-					padding 0 20px
-		
+					padding-top 7px
+					padding-bottom 13px
+					box-shadow 0 0 5px rgba(black,.2)
+					background white
+					*
+						vertical-align top
+						display inline-block
+					.message-input
+						pointer text
+						font-size 20px
+						width calc(100% - 20px - 35px - 20px*2)
+						padding-left 20px
+						
+						&:empty:before
+							content attr(placeholder)
+							color rgba(black, .6)
+							font-size 19px
+					.send-btn
+						font-weight bold
+						color #5F9F9F
+						width 35px
+						padding 0 20px
+			

@@ -1,13 +1,16 @@
 header.connections-menu
-	.option#friends
+	a.option#friends(href='/friends')
 		.icon
 		p.title Friends
 		.notafication.display-none
-	.option#messages
+	a.option#messages(href='/messages')
 		.icon
 		p.title Messages
 		.notafication 1
-	.option#requests
+	a.option#requests(href='/requests')
 		.icon
 		p.title Request
 		.notafication.display-none
+
+script.
+	_(window.location.pathname.replace("/","")).classList.add("active")
