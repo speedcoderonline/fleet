@@ -3,61 +3,64 @@
 	.main-content
 		overflow hidden
 		background $light-grey
-		height calc(100vh - 78.5px)
+		height calc(100vh - 79px)
 		
 		
 		@import "elements/connections-menu"
 		
-		.contacts
-			height calc(100vh - 78px - 224px)
-			width 250px
-			display inline-block
-			vertical-align top
-			background $light-grey
-			z-index 20
-			overflow-y scroll
-			box-shadow 0 0 5px rgba(black,.2)
-			.contact
-				padding 12px 0
-				background white
-				border-bottom 1px solid $light-grey
-				.images
-					width max-content
-					margin auto
-					padding-right 25px
-					margin-bottom 10px
-					.frame
-						height 50px
-						width 25px
-						position relative
-						display inline-block
-						.image
+		.flex-main
+		
+			display: flex
+			.contacts
+				height calc(100vh - 78px - 224px)
+				width 250px
+				display inline-block
+				vertical-align top
+				background $light-grey
+				z-index 20
+				overflow-y scroll
+				box-shadow 0 0 5px rgba(black,.2)
+				.contact
+					padding 12px 5px
+					background white
+					border-bottom 1px solid $light-grey
+					cursor pointer
+					.images
+						width max-content
+						margin auto
+						padding-right 25px
+						margin-bottom 10px
+						.frame
 							height 50px
-							width 50px
-							border-radius 50%
-							background $purple
-				h5.title
-					font-size 14px
-					font-weight bold
-					color $grey
-					text-align center
-		.chat
-			display inline-block
-			width calc(100vw - 251px)
-			position relative
-			height calc(100vh - 78px - 224px)
-			overflow-y scroll
-			
-			.flex
-				display: flex
-				flex-flow: column
-				
+							width 25px
+							position relative
+							display inline-block
+							.image
+								height 50px
+								width 50px
+								border-radius 50%
+								background $purple
+					h5.title
+						font-size 14px
+						font-weight bold
+						color $grey
+						text-align center
+			.chat
+				display inline-block
+				//width calc(100vw - 251px)
+				position relative
+				height calc(100vh - 78px - 224px)
+				overflow-y scroll
+				flex-grow 1
+					
 				.messages
-					flex 2
-					margin-bottom 40px
+					min-height calc(100% - 44px)
+					padding-bottom 10px
+					box-sizing border-box
 					.message
-						margin-left 25px
-						margin-top 15px
+						padding-left 25px
+						padding-top 15px
+						
 						.image
 							height 35px
 							width 35px
@@ -84,9 +87,11 @@
 								border-radius 4px
 								background rgba(black,.06)
 								color black
-								
+							p.date
+								color rgba(black,.7)
+								margin-top 1px
+								font-size 12px
 				.write-input
-					position absolute
 					bottom 0
 					width 100%
 					min-height 20px

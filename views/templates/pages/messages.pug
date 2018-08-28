@@ -3,27 +3,222 @@ block mainContent
 
 	include ../elements/connections-menu.pug
 
+	.flex-main
+
 	
-	.contacts
-		.contact
-			.images
-				.frame
-					.image
-				.frame
-					.image
-				.frame
-					.image
-			h5.title Filmteamet
-	.chat
-		.flex
-			.messages
+		.contacts
+			.contact
+				.images
+					.frame
+						.image
+					.frame
+						.image
+					.frame
+						.image
+				h5.title Filmteamet
+		.chat#chatField
+			.messages#messagesField
 				.message
 					.image
 					
 					.content
 						p.sender Erik Enger Karlson
 						p.text Hej hej på er whoot is ouppp
+						p.date
 
 			.write-input
-				.message-input(contenteditable='true' placeholder='Write a message here...')
-				.send-btn Send
+				.message-input#writtenmessage(contenteditable='true' placeholder='Write a message here...')
+				.send-btn(onclick='sendMessage()') Send
+
+	script.
+		var currentMessagePull
+		var currentChat
+		var user 
+		var firstChat = true
+		var userNames = {}
+		firebase.auth().onAuthStateChanged(function(currUser){
+		user = currUser
+		
+
+		firebase.database().ref('users/creators/' + user.uid + '/chats').once("value", function(snapshot){
+
+			console.log(snapshot.val())
+
+			var myChats = []
+
+			snapshot.forEach(function(chat){
+				myChats.push(chat.key)
+			})
+
+			myChats.forEach(function(myChatId){
+				firebase.database().ref('chats/' + myChatId + '/members').once("value", function(snapshotMembers){
+					var itemDiv = document.createElement('div')
+					itemDiv.classList.add('contact')
+					itemDiv.id = myChatId
+					itemDiv.onclick = function(){updateChat(itemDiv.id)}
+					document.querySelector('.contacts').appendChild(itemDiv)
+
+					firebase.database().ref('chats/' + myChatId + '/latestAction').once("value", function(snapshotDate){
+						if(snapshotDate.val() > snapshot.val()[myChatId]){
+							itemDiv.classList.add('notafication')
+						}
+					})
+
+					var titleH5 = document.createElement('h5')
+					titleH5.classList.add('title')
+					titleH5.innerText = ''
+					Object.keys(snapshotMembers.val()).forEach(function(memberId, idx){
+						firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshotFirstname){
+							if(idx !== 0){
+								titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
+							}else{
+								titleH5.innerText += snapshotFirstname.val()
+							}
+							
+							userNames[memberId] = snapshotFirstname.val()
+						})
+						firebase.database().ref('users/creators/' + memberId + '/lastname').once("value", function(snapshotLastname){
+							titleH5.innerText += ' ' + snapshotLastname.val()
+							userNames[memberId] += ' ' + snapshotLastname.val()
+						})
+					})
+					itemDiv.appendChild(titleH5)
+				})
+			})
+
+				//- firebase.database().ref('users/creators/' + user.uid).once("value", function(snapshot2){
+				//- 	var creator = snapshot2.val()
+
+				//- 	var itemDiv = document.createElement('div')
+				//- 	itemDiv.classList.add('item')
+				//- 	document.querySelector('#friends-requests').querySelector('.content').appendChild(itemDiv)
+
+				//- 	var textWrapperDiv = document.createElement('div')
+				//- 	textWrapperDiv.classList.add('text-wrapper')
+				//- 	itemDiv.appendChild(textWrapperDiv)
+
+				//- 	var titleDiv = document.createElement('a')
+				//- 	titleDiv.classList.add('title')
+				//- 	titleDiv.innerText = creator.firstname + ' ' + creator.lastname
+				//- 	titleDiv.href = '/user/creator-' + creator.uid
+				//- 	textWrapperDiv.appendChild(titleDiv)
+
+				//- 	var choisesDiv = document.createElement('div')
+				//- 	choisesDiv.classList.add('choises-div')
+				//- 	itemDiv.appendChild(choisesDiv)
+
+				//- 	var acceptDiv = document.createElement('div')
+				//- 	acceptDiv.classList.add('accept')
+				//- 	acceptDiv.classList.add('choise')
+				//- 	acceptDiv.onclick = function(event){
+
+				//- 		var milliSec = (new Date()).getTime()
+
+				//- 		firebase.database().ref('users/creators/' + creator.uid + '/friends/' + user.uid).set(milliSec)
+				//- 		firebase.database().ref('users/creators/' + user.uid + '/friends/' + creator.uid).set(milliSec)
+				//- 		firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
+				//- 			popUp('Friend added, send a message!')
+				//- 			event.target.parentElement.parentElement.remove()
+				//- 		})
+
+				//- 		var chatId = milliSec + user.uid
+
+				//- 		firebase.database().ref('chats/' + chatId).set({
+				//- 			members: {
+				//- 				[user.uid]: milliSec,
+				//- 				[creator.uid]: milliSec
+				//- 			},
+				//- 			latestAction: milliSec
+				//- 		})
+
+				//- 		firebase.database().ref('users/creators/' + user.uid + '/chats/' + chatId).set(milliSec)
+				//- 		firebase.database().ref('users/creators/' + creator.uid + '/chats/' + chatId).set(milliSec)
+
+				//- 	}
+				//- 	choisesDiv.appendChild(acceptDiv)
+
+				//- 	var denyDiv = document.createElement('div')
+				//- 	denyDiv.classList.add('deny')
+				//- 	denyDiv.classList.add('choise')
+				//- 	denyDiv.onclick = function(event){
+
+				//- 		firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
+				//- 			popUp('Friend added, send a message!')
+				//- 			event.target.parentElement.parentElement.remove()
+				//- 		})
+				//- 	}
+				//- 	choisesDiv.appendChild(denyDiv)
+				//- })
+		})
+
+		})
+
+		function updateChat(myChatId){
+			currentChat = myChatId
+
+			var myNode = document.getElementById("messagesField");
+			while (myNode.firstChild) {
+				myNode.removeChild(myNode.firstChild);
+			}
+
+			currentMessagePull = function(snapshot){
+				var messageInfo = snapshot.val()
+
+				var wrapper = document.createElement('div')
+				wrapper.classList.add('message')
+				document.querySelector('#messagesField').appendChild(wrapper)
+
+				var content = document.createElement('div')
+				content.classList.add('content')
+				wrapper.appendChild(content)
+
+				var sender = document.createElement('p')
+				sender.classList.add('sender')
+				sender.innerText = userNames[messageInfo.sender]
+				content.appendChild(sender)
+
+				var message = document.createElement('p')
+				message.classList.add('text')
+				message.innerText = messageInfo.message
+				content.appendChild(message)
+
+				var date = document.createElement('p')
+				date.classList.add('date')
+				date.innerText = timeString(messageInfo.date)
+				content.appendChild(date)
+
+				updateScroll()
+			}
+
+			var messageRef = firebase.database().ref('chats/' + myChatId + '/messages')
+
+			if(firstChat) {
+				messageRef.orderByChild('date').on("child_added", currentMessagePull)
+				firstChat = false
+			}else{
+				messageRef.off("child_added", currentMessagePull)
+				messageRef.orderByChild('date').on("child_added", currentMessagePull)
+			}
+
+			
+			
+		}
+
+		function sendMessage(){
+			var message = document.querySelector('#writtenmessage').innerText
+			var messageId = (new Date()).getTime()
+			firebase.database().ref('chats/' + currentChat + '/messages/' + messageId).set({
+				date: messageId,
+				message: message,
+				sender: user.uid
+			}).then(function(){
+				document.querySelector('.message-input').innerText = ''
+			})
+		}
+
+		function updateScroll(){
+			var element = document.getElementById("chatField");
+			element.scrollTop = element.scrollHeight - element.clientHeight
+			console.log(element.scrollTop)
+		}
+		

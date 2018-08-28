@@ -35,6 +35,16 @@ function dbPull(path, func){
 	return firebase.database().ref(path).once('value', func)
 }
 
+function timeString(date) {
+	var monthNames = ["January", "February", "March", "April", "March", "June", "July", "August", "September", "October", "November", "December"]
+
+	if((new Date()).getTime() > (date + 1000*60*60*24)){
+		return((new Date(date)).getDate() + ' of ' + monthNames[(new Date(date)).getMonth()])
+	}else{
+		return((new Date(date)).getHours() + ':' + (new Date(date)).getMinutes())
+	}
+}
+
 //Get requests
 function serverData(path, success, error){
 	var xhr = new XMLHttpRequest();

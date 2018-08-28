@@ -1,0 +1,121 @@
+extends ../index
+block mainContent
+
+	include ../elements/connections-menu.pug
+
+	
+	section
+		h5.title Teams
+		.content
+			.item
+				.images
+					.frame
+						.image
+					.frame
+						.image
+					.frame
+						.image
+				.text-wrapper
+					h5.title Filmteamet
+					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+
+			.item
+				.images
+					.frame
+						.image
+					.frame
+						.image
+					.frame
+						.image
+				.text-wrapper
+					h5.title Filmteamet
+					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+				
+	section#friends-requests
+		h5.title Friends
+		.content
+			.item
+				.images
+					.frame
+						.image
+				.text-wrapper
+					h5.title Filippa Kindborg
+					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+
+
+	script.
+		firebase.auth().onAuthStateChanged(function(user){
+
+		firebase.database().ref('users/creators/' + user.uid + '/requests').orderByChild('date').once("value", function(snapshot){
+
+			snapshot.forEach(function(request){
+				if(request.val().type == 'creator'){
+					firebase.database().ref('users/creators/' + request.val().uid).once("value", function(snapshot2){
+						var creator = snapshot2.val()
+
+						var itemDiv = document.createElement('div')
+						itemDiv.classList.add('item')
+						document.querySelector('#friends-requests').querySelector('.content').appendChild(itemDiv)
+
+						var textWrapperDiv = document.createElement('div')
+						textWrapperDiv.classList.add('text-wrapper')
+						itemDiv.appendChild(textWrapperDiv)
+
+						var titleDiv = document.createElement('a')
+						titleDiv.classList.add('title')
+						titleDiv.innerText = creator.firstname + ' ' + creator.lastname
+						titleDiv.href = '/user/creator-' + creator.uid
+						textWrapperDiv.appendChild(titleDiv)
+
+						var choisesDiv = document.createElement('div')
+						choisesDiv.classList.add('choises-div')
+						itemDiv.appendChild(choisesDiv)
+
+						var acceptDiv = document.createElement('div')
+						acceptDiv.classList.add('accept')
+						acceptDiv.classList.add('choise')
+						acceptDiv.onclick = function(event){
+
+							var milliSec = (new Date()).getTime()
+
+							firebase.database().ref('users/creators/' + creator.uid + '/friends/' + user.uid).set(milliSec)
+							firebase.database().ref('users/creators/' + user.uid + '/friends/' + creator.uid).set(milliSec)
+							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
+								popUp('Friend added, send a message!')
+								event.target.parentElement.parentElement.remove()
+							})
+
+							var chatId = milliSec + user.uid
+
+							firebase.database().ref('chats/' + chatId).set({
+								members: {
+									[user.uid]: milliSec,
+									[creator.uid]: milliSec
+								},
+								latestAction: milliSec
+							})
+
+							firebase.database().ref('users/creators/' + user.uid + '/chats/' + chatId).set(milliSec)
+							firebase.database().ref('users/creators/' + creator.uid + '/chats/' + chatId).set(milliSec)
+
+						}
+						choisesDiv.appendChild(acceptDiv)
+
+						var denyDiv = document.createElement('div')
+						denyDiv.classList.add('deny')
+						denyDiv.classList.add('choise')
+						denyDiv.onclick = function(event){
+
+							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
+								popUp('Friend added, send a message!')
+								event.target.parentElement.parentElement.remove()
+							})
+						}
+						choisesDiv.appendChild(denyDiv)
+					})
+				}
+			})
+		})
+
+		})
+		

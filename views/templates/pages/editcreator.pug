@@ -87,8 +87,8 @@ block mainContent
 
 				//try{
 
-				document.getElementById('first-name').value = userData.firstName
-				document.getElementById('last-name').value = userData.lastName
+				document.getElementById('first-name').value = userData.firstname
+				document.getElementById('last-name').value = userData.lastname
 				document.getElementById('user-description').value = userData.description || ''
 				document.getElementById('user-location').querySelector('.country').value = userData.country
 				document.getElementById('user-location').querySelector('.city').value = userData.city
@@ -315,8 +315,8 @@ block mainContent
 
 		function saveEdits(){
 			firebase.database().ref('users/creators/' + currentUser().uid).update({
-				firstName: _('first-name').value,
-				lastName: _('last-name').value,
+				firstname: _('first-name').value,
+				lastname: _('last-name').value,
 				description: _('user-description').value,
 			}).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(userSkills).then(function(){

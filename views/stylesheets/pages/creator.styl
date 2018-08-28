@@ -39,13 +39,22 @@
 					box-shadow 0 0 5px rgba(black,.2)
 					
 			
-				// .action-button
-				// 	position absolute
-				// 	left 0
-				// 	top 0
-				// 	background linear-gradient(to right, #97A0D1, #D48F89)
-				// 	padding 15px
-				// 	cursor pointer
+				.action-button
+					position absolute
+					right 0
+					bottom 0
+					margin 20px
+					height 25px
+					width 25px
+					background-size contain
+					background-repeat no-repeat
+					cursor pointer
+					
+					&.add-friend
+						background-image url('../icons/addcontact.png')
+					&.edit
+						background-image url('../icons/settings.png')
+						
 			
 			.profile-info
 				width 90%

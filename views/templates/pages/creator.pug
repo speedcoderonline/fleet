@@ -27,7 +27,7 @@ block mainContent
 			var userData = snapshot.val()
 			console.log(userData)
 
-			document.getElementById('user-name').innerText = userData.firstName + ' ' + userData.lastName
+			document.getElementById('user-name').innerText = userData.firstname + ' ' + userData.lastname
 			document.getElementById('user-description').innerText = userData.description
 			document.getElementById('user-location').innerText = userData.city + ', ' + userData.country
 
@@ -40,14 +40,17 @@ block mainContent
 				document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
 			}
 
-			firebase.database().ref('skills/').once("value", function(snapshot){
-				Object.values(userData.skills).forEach(function(mainSkill, idx){
-					renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'])
-					Object.keys(mainSkill).forEach(function(subSkill, idx2){
-						renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
+			if(userData.skills){
+				firebase.database().ref('skills/').once("value", function(snapshot){
+					Object.values(userData.skills).forEach(function(mainSkill, idx){
+						renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'])
+						Object.keys(mainSkill).forEach(function(subSkill, idx2){
+							renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
+						})
 					})
 				})
-			})
+			}
+			
 
 			
 
@@ -87,20 +90,34 @@ block mainContent
 				
 			}
 
-			Object.values(userData.projects).forEach(function(project, idx){
-				renderProjects(project.title, project.description, project.link)
-			})
-
-
-		})
-		if(firebase.auth().currentUser){
-			document.getElementById('profile-action-button').classList.remove('display-none')
-			if(firebase.auth().currentUser.uid == userId){
-				document.getElementById('profile-action-button').innerText = 'Edit'
-			}else{
-				document.getElementById('profile-action-button').innerText = 'Add Friend'
+			if(userData.projects){
+				Object.values(userData.projects).forEach(function(project, idx){
+					renderProjects(project.title, project.description, project.link)
+				})
 			}
-		}
+		})
+		firebase.auth().onAuthStateChanged(function(user){
+			if (user) {
+				document.getElementById('profile-action-button').classList.remove('display-none')
+				if(firebase.auth().currentUser.uid == userId){
+					document.getElementById('profile-action-button').classList.add('edit')
+					document.getElementById('profile-action-button').onclick = function(){
+						location.href='/editcreator'
+					}
+				}else{
+					document.getElementById('profile-action-button').classList.add('add-friend')
+					document.getElementById('profile-action-button').onclick = function(){
+						firebase.database().ref('users/creators/' + userId + '/requests/' + user.uid).set({
+							type: 'creator',
+							uid: user.uid,
+							date: (new Date()).getTime()
+						}).then(function(){
+							popUp('Request sent')
+						})
+					}
+				}
+			}
+		});
 		
 
 		
