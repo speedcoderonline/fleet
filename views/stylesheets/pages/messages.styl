@@ -52,14 +52,18 @@
 				height calc(100vh - 78px - 224px)
 				overflow-y scroll
 				flex-grow 1
+				max-width calc(100vw - 250px)
 					
 				.messages
 					min-height calc(100% - 44px)
 					padding-bottom 10px
 					box-sizing border-box
 					.message
-						padding-left 25px
+						padding 0 25px
 						padding-top 15px
+						
+						&.mine
+							text-align right
 						
 						.image
 							height 35px
@@ -73,7 +77,7 @@
 							margin-top 25px
 							
 						.content
-							margin-left 10px
+							margin 0 10px
 							display inline-block
 							p.sender
 								font-weight bold
@@ -87,6 +91,8 @@
 								border-radius 4px
 								background rgba(black,.06)
 								color black
+								text-align left
+								display inline-block
 							p.date
 								color rgba(black,.7)
 								margin-top 1px

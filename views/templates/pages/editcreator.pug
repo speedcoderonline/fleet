@@ -69,8 +69,8 @@ block mainContent
 				var userData = snapshot.val()
 				userSkills = userData.skills || {}
 
-				startCountry = userData.country
-				startCity = userData.city
+				startCountry = userData.country || ''
+				startCity = userData.city || ''
 
 				if(!userData.city || !userData.country){
 					$.getJSON("http://freegeoip.net/json/", function (data) {

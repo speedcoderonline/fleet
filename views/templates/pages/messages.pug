@@ -68,19 +68,27 @@ block mainContent
 					titleH5.classList.add('title')
 					titleH5.innerText = ''
 					Object.keys(snapshotMembers.val()).forEach(function(memberId, idx){
+						
 						firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshotFirstname){
-							if(idx !== 0){
-								titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
-							}else{
-								titleH5.innerText += snapshotFirstname.val()
+							if(memberId != user.uid){
+								if((idx != 0)&&(Object.keys(snapshotMembers.val()).length != 2)){
+									titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
+								}else{
+									titleH5.innerText += snapshotFirstname.val()
+								}
 							}
 							
 							userNames[memberId] = snapshotFirstname.val()
 						})
 						firebase.database().ref('users/creators/' + memberId + '/lastname').once("value", function(snapshotLastname){
-							titleH5.innerText += ' ' + snapshotLastname.val()
+							if(memberId != user.uid){
+								titleH5.innerText += ' ' + snapshotLastname.val()
+							}
 							userNames[memberId] += ' ' + snapshotLastname.val()
+						}).then(function(){
+							if(memberId == user.uid){idx = idx-1}
 						})
+
 					})
 					itemDiv.appendChild(titleH5)
 				})
@@ -166,6 +174,9 @@ block mainContent
 
 				var wrapper = document.createElement('div')
 				wrapper.classList.add('message')
+				if(messageInfo.sender == user.uid){
+					wrapper.classList.add('mine')
+				}
 				document.querySelector('#messagesField').appendChild(wrapper)
 
 				var content = document.createElement('div')
@@ -179,7 +190,7 @@ block mainContent
 
 				var message = document.createElement('p')
 				message.classList.add('text')
-				message.innerText = messageInfo.message
+				message.innerText = replaceNbsps(messageInfo.message)
 				content.appendChild(message)
 
 				var date = document.createElement('p')
