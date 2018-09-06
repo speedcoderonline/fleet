@@ -18,12 +18,18 @@ module.exports = (function() {
     {page:'explore'},
     {page:'friends'},
     {page:'messages'},
+    {page:'messagechat',path:'messagechat/:id', dataGen: req=>{
+      return {user:req.params.id}
+    }},
     {page:'requests'},
     {page:'editcreator'},
     {page:'editproject',path:'editproject/:id', dataGen: req=>{
       return {user:req.params.id}
     }},
     {page:'creator',path:'user/creator-:id', dataGen: req=>{
+      return {user:req.params.id}
+    }},
+    {page:'editteam',path:'editteam/:id', dataGen: req=>{
       return {user:req.params.id}
     }},
     {page:'brand',path:'user/brand-:id', dataGen: req=>{

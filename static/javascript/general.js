@@ -182,3 +182,14 @@ function replaceNbsps(str) {
   var re = new RegExp(String.fromCharCode(160), "g");
   return str.replace(re, " ");
 }
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+var deleteCookie = function(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';  
+    return true
+}

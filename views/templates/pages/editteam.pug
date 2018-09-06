@@ -17,7 +17,7 @@ block mainContent
 
 			section.participants#team-participants
 				h4.title Participants
-				.wrapper
+				.wrapper#membersWrapper
 					.add-card(onclick = 'openParticipantPicker()') New Participant
 
 			section.skills#team-skills
@@ -75,6 +75,14 @@ block mainContent
 			firebase.database().ref('teams/' + teamId).once("value", function(snapshot){
 				var teamData = snapshot.val() || {}
 				teamSkills = teamData.skills || {}
+				if(teamData.members){
+					Object.keys(teamData.members).forEach(function(memberId){
+						firebase.database().ref('users/creators/' + memberId).once("value", function(snapshot){
+							createCard(snapshot.val(), '#membersWrapper')
+						})
+					})
+				}
+				
 
 				//- startCountry = teamData.country || ''
 				//- startCity = teamData.city || ''
@@ -414,6 +422,10 @@ block mainContent
 								_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);
 							}
 							if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
+							firebase.database().ref('users/creators/' + friendId.key).once("value", function(snapshot){
+								createCard(snapshot.val(), '#membersWrapper')
+							})
+							
 							//_('team-participants').querySelector('.wrapper')
 							//add friend to team and editpage, then close popup
 						}

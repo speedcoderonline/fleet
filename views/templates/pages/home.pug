@@ -89,10 +89,7 @@ block mainContent
 
 
 	script.
-<<<<<<< Updated upstream
-		authUser()
 
-=======
 		firebase.auth().onAuthStateChanged(function(currUser){
 			if(currUser){
 				window.location = '/explore'
@@ -100,7 +97,7 @@ block mainContent
 				document.querySelector('loading-screen').classList.add('display-none')
 			}
 		})
->>>>>>> Stashed changes
+
 		function addToEmailList(emailInput){
 			var email = document.querySelector(emailInput).value
 			if(!validateEmail(email)){
