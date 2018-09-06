@@ -18,7 +18,24 @@ function _(id){
 function __(eClass){
 	return document.querySelectorAll('.' + eClass)
 }
-//Current Firebase user
+//Authenticate Firebase user
+function authUser(status){
+	firebase.auth().onAuthStateChanged(function(user){
+		if(status) {
+			if(!user){
+				window.location.replace('/')
+			}			
+		}else{
+			if(user){
+				window.location.replace('/editcreator')
+			}
+		}
+
+	})
+}
+
+// Current FIrebase User
+
 function currentUser(){
 	var user = firebase.auth().currentUser
 	if(user){
@@ -33,6 +50,48 @@ function db(path){
 
 function dbPull(path, func){
 	return firebase.database().ref(path).once('value', func)
+}
+
+
+function createCard(user, element){
+	if (user.firstname && user.lastname) {
+		var itemDiv = document.createElement('a')
+		itemDiv.href = '/user/creator-' + user.uid
+		itemDiv.classList.add('item')
+		document.querySelector(element).appendChild(itemDiv)
+
+		var images = document.createElement('div')
+		images.classList.add('images')
+
+		var frame = document.createElement('div')
+		frame.classList.add('frame')
+		var image = document.createElement('div')
+		image.classList.add('image')
+
+		images.appendChild(frame)
+		frame.appendChild(image)
+		itemDiv.appendChild(images)
+
+		var textWrapperDiv = document.createElement('div')
+		textWrapperDiv.classList.add('text-wrapper')
+		itemDiv.appendChild(textWrapperDiv)
+
+		var titleDiv = document.createElement('div')
+		titleDiv.classList.add('title')
+		titleDiv.innerText = user.firstname + ' ' + user.lastname
+		textWrapperDiv.appendChild(titleDiv)
+
+		var descriptionDiv = document.createElement('div')
+		descriptionDiv.classList.add('description')
+		descriptionDiv.innerText = user.description || ''
+		textWrapperDiv.appendChild(descriptionDiv)
+	} else {
+		console.log('user name undefined')
+	}
+}
+
+function onLoad(func){
+	func
 }
 
 function timeString(date) {

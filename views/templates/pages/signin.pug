@@ -1,4 +1,7 @@
 extends ../index.pug
+block pageStatus
+	- var signedOutPage = true;
+
 block mainContent
 
 	.biglogo
@@ -19,8 +22,7 @@ block mainContent
 		h4 Click <a href='/signup'>here</a> to sign up!
 
 		script.
-			signinform.addEventListener('submit', signInCreator)
-			function signInCreator(e){
+			signinform.addEventListener('submit', (e) => {
 				e.preventDefault()
 				firebase.auth().signInWithEmailAndPassword(signinform.email.value, signinform.password.value).catch(function(error){
 					var errorCode = error.code
@@ -40,7 +42,7 @@ block mainContent
 					}
 				}).then(function(){
 					if(firebase.auth().currentUser){
-						window.location.replace('/')
+						window.location.replace('/editcreator')
 					}
 				})
-			}
+			})

@@ -15,6 +15,7 @@ module.exports = (function() {
     {page:'home', path:'/'},
     {page:'signup'},
     {page:'signin'},
+    {page:'explore'},
     {page:'friends'},
     {page:'messages'},
     {page:'requests'},

@@ -88,6 +88,8 @@ block mainContent
 
 
 	script.
+		authUser()
+
 		function addToEmailList(emailInput){
 			var email = document.querySelector(emailInput).value
 			if(!validateEmail(email)){

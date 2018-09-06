@@ -1,0 +1,22 @@
+extends ../index
+
+block mainContent
+	section.upper-section
+		.search-field#tags
+			input(placeholder='Search by skills')
+		.search-field#people
+			input(placeholder='Search by name')
+		.search-field#groups
+			input(placeholder='Search groups')
+	section.lower-section
+		h3 Explore
+		#search-results
+
+	script.
+		onLoad(
+			dbPull('users/creators/', function(snapshot){
+				snapshot.forEach(function(user){
+					createCard(user.val(), '#search-results')
+				})
+			})
+		)

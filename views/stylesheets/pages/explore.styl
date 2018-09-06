@@ -1,0 +1,39 @@
+[data-page='explore']
+	
+	.main-content
+		.upper-section
+			padding 80px 0
+			display flex
+			justify-content center
+			background $grey
+			border-style solid
+			border-width 0 0 6px 0
+			border-image $maingradient 1
+			
+			input
+				padding 20px
+				font-size 140%
+				border none
+				border-radius 6px
+				margin 0 20px
+				background #f1f1f1f1
+				
+				&::placeholder
+					color rgba(black, .3)
+					font-weight lighter
+		.lower-section
+			background $lighter-grey
+			min-height 100vh
+			text-align center
+			h3
+				font-weight lighter
+				padding 40px 0
+				
+			#search-results
+				display flex
+				flex-wrap wrap
+				max-width 1300px
+				justify-content center
+				margin auto
+			
+		@import "elements/profilecard"
