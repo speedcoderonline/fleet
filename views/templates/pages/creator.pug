@@ -22,6 +22,8 @@ block mainContent
 	script.
 		var userId = subpage.replace('creator-','')
 
+		firebase.auth().onAuthStateChanged(function(user){
+
 		//action-button -> edit or add friend
 		firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
 			var userData = snapshot.val()
@@ -49,6 +51,13 @@ block mainContent
 						})
 					})
 				})
+			}
+
+			if(snapshot.val().friends[user.uid]){
+				document.getElementById('profile-action-button').innerText = 'Message'
+				document.getElementById('profile-action-button').onclick = function(){
+					window.location = '/messages'
+				}
 			}
 			
 
@@ -96,27 +105,27 @@ block mainContent
 				})
 			}
 		})
-		firebase.auth().onAuthStateChanged(function(user){
-			if (user) {
-				document.getElementById('profile-action-button').classList.remove('display-none')
-				if(firebase.auth().currentUser.uid == userId){
-					document.getElementById('profile-action-button').classList.add('edit')
-					document.getElementById('profile-action-button').onclick = function(){
-						location.href='/editcreator'
-					}
-				}else{
-					document.getElementById('profile-action-button').classList.add('add-friend')
-					document.getElementById('profile-action-button').onclick = function(){
-						firebase.database().ref('users/creators/' + userId + '/requests/' + user.uid).set({
-							type: 'creator',
-							uid: user.uid,
-							date: (new Date()).getTime()
-						}).then(function(){
-							popUp('Request sent')
-						})
-					}
+		
+		if (user) {
+			document.getElementById('profile-action-button').classList.remove('display-none')
+			if(firebase.auth().currentUser.uid == userId){
+				document.getElementById('profile-action-button').innerText = 'Edit Profile'
+				document.getElementById('profile-action-button').onclick = function(){
+					location.href='/editcreator'
+				}
+			}else{
+				document.getElementById('profile-action-button').innerText = 'Add Friend'
+				document.getElementById('profile-action-button').onclick = function(){
+					firebase.database().ref('users/creators/' + userId + '/requests/' + user.uid).set({
+						type: 'creator',
+						uid: user.uid,
+						date: (new Date()).getTime()
+					}).then(function(){
+						popUp('Request sent')
+					})
 				}
 			}
+		}
 		});
 		
 

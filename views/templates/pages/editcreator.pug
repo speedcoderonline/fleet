@@ -59,6 +59,13 @@ block mainContent
 		var renderAllSkills
 		var renderAllProjects
 		var currentProjectId = (new Date).getTime()
+		var newUser = getCookie('newUser')
+
+		if(newUser){
+			_('save-button').innerText = 'Continue'
+			_('save-button').classList.remove('display-none')
+
+		}
 
 		function changesMade(){
 			_('save-button').classList.remove('display-none')
@@ -74,7 +81,7 @@ block mainContent
 				startCity = userData.city || ''
 
 				if(!userData.city || !userData.country){
-					$.getJSON("http://freegeoip.net/json/", function (data) {
+					$.getJSON("http://api.ipstack.com/check?access_key=b35d030d40abec57146c3d0a8c458871", function (data) {
 						var country = data.country_name
 						var region = data.region_name
 
@@ -315,13 +322,22 @@ block mainContent
 		}
 
 		function saveEdits(){
+			if(!_('first-name').value || !_('last-name').value || !_('user-location').querySelector('.city').value || !_('user-location').querySelector('.country').value){
+				popUp("You have to input your name and location.")
+				return
+			}
 			firebase.database().ref('users/creators/' + currentUser().uid).update({
 				firstname: _('first-name').value,
 				lastname: _('last-name').value,
-				description: _('user-description').value,
+				description: _('user-description').innerText,
 			}).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(userSkills).then(function(){
-					popUp('Changes saved.')
+					if(!newUser){
+						popUp('Changes saved.')
+					}else{
+						window.location.replace('/explore')
+					}
+					
 				})
 
 			})

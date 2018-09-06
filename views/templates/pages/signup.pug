@@ -45,9 +45,10 @@ block mainContent
 					firstname: signupform.firstname.value,
 					lastname: signupform.lastname.value,
 					email: signupform.email.value,
-					uid: currentUser().uid
+					uid: currentUser().uid,
 				}).then(function(){
-					window.location.replace('/')
+					document.cookie = "newUser=true; expires=Thu, 18 Dec 2029 12:00:00 UTC";
+					window.location.replace('/editcreator')
 				})
 			}).catch(function(error){
 				const errorCode = error.code

@@ -23,6 +23,12 @@
 			.content
 				position relative
 				
+				&:empty:after
+					content 'Nothing here'
+					color rgba(black, .3)
+					font-size 17px
+					position relative
+				
 				@import "elements/profilecard"
 				
 

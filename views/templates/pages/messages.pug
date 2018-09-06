@@ -7,35 +7,38 @@ block mainContent
 
 	
 		.contacts
-			.contact
-				.images
-					.frame
-						.image
-					.frame
-						.image
-					.frame
-						.image
-				h5.title Filmteamet
-		.chat#chatField
+			//- .contact
+			//- 	.images
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 	h5.title Filmteamet
+		.chat.display-none#chatField
 			.messages#messagesField
-				.message
-					.image
+				//- .message
+				//- 	.image
 					
-					.content
-						p.sender Erik Enger Karlson
-						p.text Hej hej på er whoot is ouppp
-						p.date
+				//- 	.content
+				//- 		p.sender Erik Enger Karlson
+				//- 		p.text Hej hej på er whoot is ouppp
+				//- 		p.date
 
 			.write-input
 				.message-input#writtenmessage(contenteditable='true' placeholder='Write a message here...')
 				.send-btn(onclick='sendMessage()') Send
 
+	script(src='/javascript/renderchat.js')
 	script.
 		var currentMessagePull
 		var currentChat
 		var user 
 		var firstChat = true
 		var userNames = {}
+		var firstChatId
+
 		firebase.auth().onAuthStateChanged(function(currUser){
 		user = currUser
 		
@@ -50,17 +53,29 @@ block mainContent
 				myChats.push(chat.key)
 			})
 
-			myChats.forEach(function(myChatId){
+			myChats.forEach(function(myChatId, idx){
 				firebase.database().ref('chats/' + myChatId + '/members').once("value", function(snapshotMembers){
 					var itemDiv = document.createElement('div')
 					itemDiv.classList.add('contact')
 					itemDiv.id = myChatId
-					itemDiv.onclick = function(){updateChat(itemDiv.id)}
+
+					itemDiv.onclick = function(){
+						if(window.innerWidth>600){
+							document.querySelector('.active-chat').classList.remove('active-chat')
+							_(itemDiv.id).classList.add('active-chat')
+							updateChat(itemDiv.id)
+						}else{
+							window.location = '/messagechat/' + itemDiv.id
+						}
+						
+					}
 					document.querySelector('.contacts').appendChild(itemDiv)
 
-					firebase.database().ref('chats/' + myChatId + '/latestAction').once("value", function(snapshotDate){
+					firebase.database().ref('chats/' + myChatId + '/latestAction').on("value", function(snapshotDate){
 						if(snapshotDate.val() > snapshot.val()[myChatId]){
 							itemDiv.classList.add('notafication')
+						}else{
+							itemDiv.classList.remove('notafication')
 						}
 					})
 
@@ -68,6 +83,7 @@ block mainContent
 					titleH5.classList.add('title')
 					titleH5.innerText = ''
 					Object.keys(snapshotMembers.val()).forEach(function(memberId, idx){
+						var currentUserName = ''
 						
 						firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshotFirstname){
 							if(memberId != user.uid){
@@ -75,22 +91,26 @@ block mainContent
 									titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
 								}else{
 									titleH5.innerText += snapshotFirstname.val()
-								}
-							}
+								}							}
+
+							currentUserName = snapshotFirstname.val()
 							
-							userNames[memberId] = snapshotFirstname.val()
 						})
 						firebase.database().ref('users/creators/' + memberId + '/lastname').once("value", function(snapshotLastname){
 							if(memberId != user.uid){
 								titleH5.innerText += ' ' + snapshotLastname.val()
 							}
-							userNames[memberId] += ' ' + snapshotLastname.val()
+							currentUserName += ' ' + snapshotLastname.val()
+							userNames[memberId] = currentUserName
+							document.cookie = "userNames=" + JSON.stringify(userNames) + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
 						}).then(function(){
 							if(memberId == user.uid){idx = idx-1}
 						})
 
 					})
 					itemDiv.appendChild(titleH5)
+
+					if(idx == 0 && window.innerWidth>600){_(itemDiv.id).classList.add('active-chat');updateChat(myChatId)}
 				})
 			})
 
@@ -161,75 +181,4 @@ block mainContent
 
 		})
 
-		function updateChat(myChatId){
-			currentChat = myChatId
-
-			var myNode = document.getElementById("messagesField");
-			while (myNode.firstChild) {
-				myNode.removeChild(myNode.firstChild);
-			}
-
-			currentMessagePull = function(snapshot){
-				var messageInfo = snapshot.val()
-
-				var wrapper = document.createElement('div')
-				wrapper.classList.add('message')
-				if(messageInfo.sender == user.uid){
-					wrapper.classList.add('mine')
-				}
-				document.querySelector('#messagesField').appendChild(wrapper)
-
-				var content = document.createElement('div')
-				content.classList.add('content')
-				wrapper.appendChild(content)
-
-				var sender = document.createElement('p')
-				sender.classList.add('sender')
-				sender.innerText = userNames[messageInfo.sender]
-				content.appendChild(sender)
-
-				var message = document.createElement('p')
-				message.classList.add('text')
-				message.innerText = replaceNbsps(messageInfo.message)
-				content.appendChild(message)
-
-				var date = document.createElement('p')
-				date.classList.add('date')
-				date.innerText = timeString(messageInfo.date)
-				content.appendChild(date)
-
-				updateScroll()
-			}
-
-			var messageRef = firebase.database().ref('chats/' + myChatId + '/messages')
-
-			if(firstChat) {
-				messageRef.orderByChild('date').on("child_added", currentMessagePull)
-				firstChat = false
-			}else{
-				messageRef.off("child_added", currentMessagePull)
-				messageRef.orderByChild('date').on("child_added", currentMessagePull)
-			}
-
-			
-			
-		}
-
-		function sendMessage(){
-			var message = document.querySelector('#writtenmessage').innerText
-			var messageId = (new Date()).getTime()
-			firebase.database().ref('chats/' + currentChat + '/messages/' + messageId).set({
-				date: messageId,
-				message: message,
-				sender: user.uid
-			}).then(function(){
-				document.querySelector('.message-input').innerText = ''
-			})
-		}
-
-		function updateScroll(){
-			var element = document.getElementById("chatField");
-			element.scrollTop = element.scrollHeight - element.clientHeight
-			console.log(element.scrollTop)
-		}
-		
+	

@@ -39,6 +39,29 @@ admin.database().ref('/users/userx').set({
     email: "test@mail.com"
 });
 
+//ses
+
+var ses = require('node-ses')
+  , sesClient = ses.createClient({ key: 'AKIAIYYQKFSZHBJ3OODA', secret: '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', amazon:'https://email.eu-west-1.amazonaws.com' });
+ 
+// Give SES the details and let it construct the message for you. 
+
+function sendEmail(emailAddress, subject, content){
+	sesClient.sendEmail({
+		to: emailAddress
+	 , from: 'Fleet <info@fleetofcreators.com>'
+	 , subject: subject
+	 , message: content
+	}, function (err, data, res) {
+		if(err){
+			console.log(err)
+		}
+		if(data){
+			console.log(data)
+		}
+	})
+}
+
 //Compile Stylus
 
 function compile(str, path){
@@ -75,3 +98,5 @@ const port = process.env.PORT || 8000
 app.listen(port, function(){
 	console.log('Listening on port ' + port)
 }) 
+
+//sendEmail("sebastian@thunman.se", "subject", "YAY")

@@ -1,0 +1,34 @@
+extends ../index
+block mainContent
+
+
+	.chat#chatField
+		.messages#messagesField
+			//- .message
+			//- 	.image
+				
+			//- 	.content
+			//- 		p.sender Erik Enger Karlson
+			//- 		p.text Hej hej på er whoot is ouppp
+			//- 		p.date
+
+		.write-input
+			.message-input#writtenmessage(contenteditable='true' placeholder='Write a message here...')
+			.send-btn(onclick='sendMessage()') Send
+
+	script(src='/javascript/renderchat.js')
+	script.
+		var currentChat = subpage
+		var firstChat = true
+		var user 
+		var userNames = JSON.parse(getCookie('userNames'))
+		var firstChatId
+
+		firebase.auth().onAuthStateChanged(function(currUser){
+			user = currUser
+	
+			updateChat(currentChat)
+
+		})
+
+	

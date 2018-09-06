@@ -21,8 +21,23 @@
 					font-size 15px
 				
 			.content
-				position relative
+				&:empty:after
+					content 'Nothing here'
+					color rgba(black, .3)
+					font-size 17px
+					position relative
 				
 				@import "elements/profilecard"
+				
+				.add-card
+					background-image url('../icons/plus.png')
+					background-size 60%
+					background-position center center
+					background-repeat no-repeat
+					height 100px
+					width 100px
+					background-color white
+					border-radius 5px
+					cursor pointer
 
 			

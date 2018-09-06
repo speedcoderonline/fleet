@@ -1,0 +1,456 @@
+extends ../index
+block mainContent
+
+	.save-button#save-button(onclick = 'saveEdits()') Save
+	#participant-picker.display-none
+		.close(onclick="_('participant-picker').classList.add('display-none');while (_('participant-picker').querySelector('.wrapper').firstChild) {_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);}") Close
+		.wrapper
+
+	.profile-wrapper
+
+		.profile-info
+
+			.non-autosave
+				section.name
+					h4.title Name
+					input.text-input.name#name(placeholder='Team name' onkeydown='changesMade()')
+
+			section.participants#team-participants
+				h4.title Participants
+				.wrapper
+					.add-card(onclick = 'openParticipantPicker()') New Participant
+
+			section.skills#team-skills
+				h4.title Competenses
+				.my-wrapper
+				.potential-wrapper
+					header(onclick='_("team-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
+						.title Add competens
+						.expand
+					.content
+
+			section.projects#team-projects
+				h4.title Work
+				.edit-wrapper
+					.image-picker
+					.wrapper
+						input.text-input.info.title#project-title(placeholder='Title')
+						input.text-input.info.link#project-link(placeholder='Link (optional)')
+					.long-input#project-description(contenteditable='true' placeholder='Description')
+
+					.save.action-btn#project-save(onclick='saveProject()') Add
+					.delete.action-btn.display-none#project-delete(onclick='deleteProject()') Delete
+				.content-wrapper
+			//	.add-new(onclick='newProject()') Add
+
+	
+
+	script.
+		//AIzaSyB9uz6sZTjEZOIE6Z_GWoXNyxNpsT33v70
+		var teamId = subpage
+		
+		var startCountry
+		var startCity
+		var teamSkills
+		var saveLocation
+		var renderAllSkills
+		var renderAllProjects
+		var currentProjectId = (new Date).getTime()
+		var userId
+		var newTeam = getCookie('newTeam')
+		var noNameSaved = getCookie('newTeam')
+
+		if(newTeam){
+			_('save-button').innerText = 'Create'
+			_('save-button').classList.remove('display-none')
+		}
+
+		function changesMade(){
+			_('save-button').classList.remove('display-none')
+		}
+
+		//action-button -> edit or add friend
+		firebase.auth().onAuthStateChanged(function(user) {
+			userId = user.uid
+			firebase.database().ref('teams/' + teamId).once("value", function(snapshot){
+				var teamData = snapshot.val() || {}
+				teamSkills = teamData.skills || {}
+
+				//- startCountry = teamData.country || ''
+				//- startCity = teamData.city || ''
+
+				//- if(!teamData.city || !teamData.country){
+				//- 	$.getJSON("http://api.ipstack.com/check?access_key=b35d030d40abec57146c3d0a8c458871", function (data) {
+				//- 		var country = data.country_name
+				//- 		var region = data.region_name
+
+				//- 		document.getElementById('team-location').querySelector('.country').value = country
+				//- 		document.getElementById('team-location').querySelector('.city').value = region
+
+				//- 		saveLocation()
+						
+				//- 	});
+				//- }
+
+				//try{
+
+				document.getElementById('name').value = teamData.name || 'New team'
+				//- document.getElementById('team-location').querySelector('.country').value = teamData.country
+				//- document.getElementById('team-location').querySelector('.city').value = teamData.city
+
+				//- saveLocation = function(){
+
+				//- 	function capitalizeFirstLetter(string) {
+				//- 		return string.charAt(0).toUpperCase() + string.slice(1);
+				//- 	}
+				//- 	var country = capitalizeFirstLetter(document.getElementById('team-location').querySelector('.country').value.toLowerCase())
+				//- 	var city = capitalizeFirstLetter(document.getElementById('team-location').querySelector('.city').value.toLowerCase())
+
+				//- 	firebase.database().ref('teams/creators/' + currentUser().uid).update({
+				//- 		country: country,
+				//- 		city: city,
+				//- 	})
+
+				//- 	firebase.database().ref('locations/' + startCountry + '/teams/' + currentUser().uid).remove()
+				//- 	firebase.database().ref('locations/' + country + '/teams/' + currentUser().uid).set((new Date).getTime())
+
+				//- 	firebase.database().ref('locations/' + startCountry + '/cities/' + startCity + '/' + currentUser().uid).remove()
+				//- 	firebase.database().ref('locations/' + country + '/cities/' + city + '/' + currentUser().uid).set((new Date).getTime())
+
+				//- 	startCountry = country
+				//- 	startCity = city
+				//- }
+
+				renderAllSkills =  function(teamSkills){
+					firebase.database().ref('skills').once("value", function(snapshot){
+
+						[document.getElementById('team-skills').querySelector('.my-wrapper'), document.getElementById('team-skills').querySelector('.potential-wrapper').querySelector('.content')].forEach(function(el){
+							while (el.firstChild) {
+								el.removeChild(el.firstChild);
+							}
+						})
+
+						var allSkills = snapshot.val()
+
+						Object.values(allSkills).forEach(function(mainSkill, idx){
+							var mainSkillId = Object.keys(allSkills)[idx]
+							if(teamSkills){
+								var teamMainSkill = teamSkills[mainSkillId]
+							}else{
+								var teamMainSkill = false
+							}
+							renderSkill(Object.values(allSkills)[idx].name, mainSkillId, teamMainSkill, true)
+
+							if(teamMainSkill){
+								Object.values(mainSkill.subSkills).forEach(function(subSkill, idx2){
+									var subSkillId = Object.keys(mainSkill.subSkills)[idx2]
+									if(teamMainSkill){
+										var teamSubSkill = teamSkills[mainSkillId][subSkillId]
+									}else{
+										var teamSubSkill = false
+									}
+									
+									renderSkill(subSkill.name, subSkillId, teamSubSkill, false, mainSkillId)
+								})
+							}
+							
+						})
+					})
+					//render skills
+
+					function renderSkill(title, id, checked, isMainSkill, mainSkillId){
+						var skillDiv = document.createElement('div')
+						skillDiv.classList.add('skill')
+						document.getElementById('team-skills').querySelector('.potential-wrapper').querySelector('.content').appendChild(skillDiv)
+
+						var checkmark = document.createElement('input')
+						checkmark.type = 'checkbox'
+						checkmark.dataset.skillId = id
+						checkmark.id = id
+						checkmark.dataset.isMainSkill = isMainSkill
+						checkmark.dataset.mainSkillId = mainSkillId
+						checkmark.classList.add('checkmark')
+						checkmark.checked = checked
+						if(!isMainSkill){checkmark.classList.add('main-' + mainSkillId)}
+						skillDiv.appendChild(checkmark)
+
+						checkmark.onclick = function(el){
+
+							//- if(el.target.dataset.isMainSkill == 'true'){
+							//- 	if(!el.target.checked) document.querySelectorAll('.main-' + el.target.dataset.skillId).forEach(function(el2){
+							//- 		el2.checked = false
+							//- 	})
+							//- 	teamSkills[el.target.dataset.skillId] = el.target.checked || null
+							//- }else{
+							//- 	if(!_(el.target.dataset.mainSkillId).checked){
+							//- 		el.target.checked = false
+							//- 		return
+							//- 	}
+
+							//- 	if(typeof(teamSkills[el.target.dataset.mainSkillId]) == "boolean"){
+							//- 		teamSkills[el.target.dataset.mainSkillId] = {}
+							//- 	}
+							//- 	teamSkills[el.target.dataset.mainSkillId][el.target.dataset.skillId] = el.target.checked || null
+
+							//- 	if(typeof(teamSkills[el.target.dataset.mainSkillId]) !== "boolean"){
+
+							//- 		var onlyNull = true
+
+							//- 		Object.values(teamSkills[el.target.dataset.mainSkillId]).forEach(function(val){
+							//- 			if(val !== null){onlyNull = false}
+							//- 		})
+
+							//- 		if(onlyNull){
+							//- 			teamSkills[el.target.dataset.mainSkillId] = true
+							//- 		}
+							//- 	}
+							//- }
+							//- console.log(teamSkills)
+
+							if(el.target.dataset.isMainSkill == 'true'){
+								var skillPath = el.target.dataset.skillId
+							}else{
+								var skillPath = el.target.dataset.mainSkillId + '/' + el.target.dataset.skillId
+							}
+
+							firebase.database().ref('teams/' + teamId + '/skills/' + skillPath).set(el.target.checked).then(function(){
+								reRenderAllSkills()
+								if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
+							})
+							
+						}	
+
+						var titleP = document.createElement('p')
+						titleP.innerText = title
+						titleP.classList.add('title')
+						if(isMainSkill){titleP.style.fontWeight = "500"}
+						skillDiv.appendChild(titleP)
+
+						if(checked){
+							var enabledSkillDiv = skillDiv.cloneNode(true)
+							document.getElementById('team-skills').querySelector('.my-wrapper').appendChild(enabledSkillDiv)
+							enabledSkillDiv.querySelector('.checkmark').onclick = checkmark.onclick
+						}
+					}
+				}
+
+				renderAllSkills(teamData.skills)
+
+				//render Projects
+
+				renderAllProjects = function(teamProjects){
+					Object.values(teamProjects).forEach(function(project, idx){
+						renderProject(Object.keys(teamProjects)[idx], project.title, project.description, project.link)
+					})
+				}
+
+				if(teamData.projects){
+					renderAllProjects(teamData.projects)
+				}
+
+				//- }catch(e){
+
+				//- }
+
+			})
+		})
+
+
+		function renderProject(id, title, description, link){
+			var wrapperDiv = document.createElement('div')
+			wrapperDiv.classList.add('project')
+			document.getElementById('team-projects').querySelector('.content-wrapper').appendChild(wrapperDiv)
+			wrapperDiv.dataset.id = id
+
+			var imageDiv = document.createElement('div')
+			imageDiv.classList.add('image')
+			//if(image){imageDiv.innerText = image}
+			wrapperDiv.appendChild(imageDiv)
+
+			var textWrapperDiv = document.createElement('div')
+			textWrapperDiv.classList.add('text-wrapper')
+			wrapperDiv.appendChild(textWrapperDiv)
+
+			var titleDiv = document.createElement('p')
+			titleDiv.classList.add('title')
+			if(title){titleDiv.innerText = title}
+			textWrapperDiv.appendChild(titleDiv)
+
+			var descriptionDiv = document.createElement('p')
+			descriptionDiv.classList.add('description')
+			if(description){descriptionDiv.innerText = description}
+			textWrapperDiv.appendChild(descriptionDiv)
+
+			var linkEl = document.createElement('p')
+			linkEl.classList.add('link')
+			linkEl.classList.add('display-none')
+			if(link){linkEl.innerText = link}
+			wrapperDiv.appendChild(linkEl)
+
+			wrapperDiv.onclick = function(event){
+				currentProjectId = event.currentTarget.dataset.id
+				_('project-title').value = event.currentTarget.querySelector('.text-wrapper').querySelector('.title').innerText
+				_('project-description').innerText = event.currentTarget.querySelector('.text-wrapper').querySelector('.description').innerText
+				_('project-link').value = event.currentTarget.querySelector('.link').innerText
+				_('project-delete').classList.remove('display-none')
+				event.currentTarget.classList.add('display-none')
+				_('project-save').innerText = 'Save'
+			}
+		}
+
+		//- function newProject(){
+		//- 	var projectId = (new Date()).getTime()
+
+		//- 	firebase.database().ref('teams/' + teamId + '/projects/' + projectId).set({
+		//- 		title: "",
+		//- 		description: "",
+		//- 		link: ""
+		//- 	}).then(function(){
+		//- 		window.location = '/editproject/' + projectId
+		//- 	})
+		//- }
+
+		function reRenderAllSkills(){
+			
+			firebase.database().ref('teams/' + teamId + '/skills').once("value", function(snapshot){
+
+				teamSkills = snapshot.val()
+				renderAllSkills(teamSkills)
+			})
+		}
+
+		function saveEdits(){
+			noNameSaved = false
+			if(!_('name').value){
+				popUp("You have to input the Team's name")
+				return
+			}
+			firebase.database().ref('teams/' + teamId).update({
+				name: _('name').value,
+			}).then(function(){
+				firebase.database().ref('teams/' + teamId + '/skills').set(teamSkills).then(function(){
+					if(!newTeam){
+						popUp('Changes saved.')
+					}else{
+						window.location.replace('/team/' + teamId)
+					}
+					
+				})
+
+			})
+
+			//- if(startCity != _('team-location').querySelector('.city').value || startCountry !== _('team-location').querySelector('.country').value){
+			//- 	saveLocation()
+			//- }
+		}
+
+		function deleteProject(){
+			firebase.database().ref('teams/' + teamId + '/projects/' + currentProjectId).remove().then(function(){
+				_('project-title').value = ''
+				_('project-description').innerText = ''
+				_('project-link').value = ''
+				currentProjectId = (new Date).getTime()
+
+				var content = document.getElementById('team-projects').querySelector('.content-wrapper')
+				while (content.firstChild) {
+					content.removeChild(content.firstChild);
+				}
+
+				firebase.database().ref('teams/' + teamId + '/projects').once("value", function(snapshot){
+					teamProjects = snapshot.val()
+					renderAllProjects(teamProjects)
+					popUp('removed.')
+					_('project-delete').classList.add('display-none')
+					_('project-save').innerText = 'Add'
+				})
+			})
+		}
+
+		function saveProject(){
+			if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
+			firebase.database().ref('teams/' + teamId + '/projects/' + currentProjectId).set({
+				title: _('project-title').value,
+				description: _('project-description').innerText,
+				link: _('project-link').value
+			}).then(function(){
+				_('project-title').value = ''
+				_('project-description').innerText = ''
+				_('project-link').value = ''
+				currentProjectId = (new Date).getTime()
+
+				var content = document.getElementById('team-projects').querySelector('.content-wrapper')
+				while (content.firstChild) {
+					content.removeChild(content.firstChild);
+				}
+
+				firebase.database().ref('teams/' + teamId + '/projects').once("value", function(snapshot){
+					teamProjects = snapshot.val()
+					renderAllProjects(teamProjects)
+					popUp('Saved.')
+					_('project-delete').classList.add('display-none')
+					_('project-save').innerText = 'Add'
+				})
+			})
+			
+		}
+
+		function openParticipantPicker(){
+			_('participant-picker').classList.remove('display-none')
+
+			firebase.database().ref('users/creators/' + userId + '/friends').once("value", function(snapshot){
+				console.log(snapshot.val())
+				snapshot.forEach(function(friendId){
+					firebase.database().ref('users/creators/' + friendId.key + '/firstname').once("value", function(snapshot){
+						var friendDiv = document.createElement('div')
+						friendDiv.classList.add('friend')
+						_('participant-picker').querySelector('.wrapper').appendChild(friendDiv)
+						friendDiv.id = 'add-' + friendId.key
+						friendDiv.innerText = snapshot.val()
+
+						friendDiv.onclick = function(event){
+							firebase.database().ref('teams/' + teamId + '/members/' + friendId.key).set((new Date()).getTime())
+							_('participant-picker').classList.add('display-none')
+							while (_('participant-picker').querySelector('.wrapper').firstChild) {
+								_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);
+							}
+							if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
+							//_('team-participants').querySelector('.wrapper')
+							//add friend to team and editpage, then close popup
+						}
+					}).then(firebase.database().ref('users/creators/' + friendId.key + '/lastname').once("value", function(snapshot){
+						_('add-' + friendId.key).innerText += (' ' + snapshot.val())
+						
+					}))
+				})
+			})
+		}
+
+	//- script.
+	//- 	function activatePlaceSearch(){
+	//- 		var input = _("location-search")
+	//- 		 var options = {
+	//- 			types: ['(cities)'],
+	//- 		 };
+	//- 		var autocomplete = new google.maps.places.Autocomplete(input)
+
+	//- 		google.maps.event.addListener(autocomplete, 'place_changed', function() {
+	//- 			var place = autocomplete.getPlace();
+	//- 			for (var i = 0; i < place.address_components.length; i++) {
+	//- 				for (var j = 0; j < place.address_components[i].types.length; j++) {
+	//- 					if (place.address_components[i].types[j] == "postal_code") {
+	//- 					document.getElementById('postal_code').innerHTML = place.address_components[i].long_name;
+
+	//- 					}
+	//- 				}
+	//- 			}
+	//- 		})
+	//- 	}
+
+	//- script(type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9uz6sZTjEZOIE6Z_GWoXNyxNpsT33v70&libraries=places&callback=activatePlaceSearch")
+
+
+		
+
+
+
+		

@@ -7,49 +7,52 @@ block mainContent
 	section
 		h5.title Teams
 		.content
-			.item
-				.images
-					.frame
-						.image
-					.frame
-						.image
-					.frame
-						.image
-				.text-wrapper
-					h5.title Filmteamet
-					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+			.add-card(onclick="document.cookie = 'newTeam=true; expires=Thu, 18 Dec 2029 12:00:00 UTC';window.location='/editteam/'+userId+(new Date()).getTime()")
+			//- .item
+			//- 	.images
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 	.text-wrapper
+			//- 		h5.title Filmteamet
+			//- 		p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
 
-			.item
-				.images
-					.frame
-						.image
-					.frame
-						.image
-					.frame
-						.image
-				.text-wrapper
-					h5.title Filmteamet
-					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+			//- .item
+			//- 	.images
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 		.frame
+			//- 			.image
+			//- 	.text-wrapper
+			//- 		h5.title Filmteamet
+			//- 		p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
 				
 	section#creator-friends
 		h5.title Friends
 		.content
-			.item
-				.images
-					.frame
-						.image
-				.text-wrapper
-					h5.title Filippa Kindborg
-					p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
+			//- .item
+			//- 	.images
+			//- 		.frame
+			//- 			.image
+			//- 	.text-wrapper
+			//- 		h5.title Filippa Kindborg
+			//- 		p.description I have worked for organizations to develop applications, make graphic designs, produce and edit films, as well making similar content for my own.
 
 
 	script.
+		var userId
 		firebase.auth().onAuthStateChanged(function(user){
+		userId = user.uid
 
 		firebase.database().ref('users/creators/' + user.uid + '/friends').orderByChild('date').once("value", function(snapshot){
 
 			snapshot.forEach(function(friend){
-				firebase.database().ref('users/creators/' + user.uid).once("value", function(snapshot2){
+				firebase.database().ref('users/creators/' + friend.key).once("value", function(snapshot2){
 					var creator = snapshot2.val()
 
 					var itemDiv = document.createElement('a')
@@ -68,7 +71,7 @@ block mainContent
 
 					var descriptionDiv = document.createElement('div')
 					descriptionDiv.classList.add('description')
-					descriptionDiv.innerText = creator.description
+					descriptionDiv.innerText = creator.description || ''
 					textWrapperDiv.appendChild(descriptionDiv)
 				})
 			})

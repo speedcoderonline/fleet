@@ -3,6 +3,7 @@ block pageStatus
 	- var signedOutPage = true;
 
 block mainContent
+	.loading-screen.blank
 	header
 		video.video-background(poster='images/thumbnail.png' playbackRate='3.0' autoplay loop muted)
 			source(src='../videos/fleet-blured.mp4' type="video/mp4")
@@ -88,8 +89,18 @@ block mainContent
 
 
 	script.
+<<<<<<< Updated upstream
 		authUser()
 
+=======
+		firebase.auth().onAuthStateChanged(function(currUser){
+			if(currUser){
+				window.location = '/explore'
+			}else{
+				document.querySelector('loading-screen').classList.add('display-none')
+			}
+		})
+>>>>>>> Stashed changes
 		function addToEmailList(emailInput){
 			var email = document.querySelector(emailInput).value
 			if(!validateEmail(email)){

@@ -27,6 +27,7 @@
     "firebase": "^4.11.0",
     "firebase-admin": "^5.11.0",
     "morgan": "^1.9.0",
+    "node-ses": "^2.0.5",
     "nib": "^1.1.2",
     "pug": "^2.0.0-rc.4",
     "stylus": "^0.54.5"

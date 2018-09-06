@@ -1,4 +1,4 @@
-//Reoccuring styles
+/Reoccuring styles
 
 html, body
 	height 100%
@@ -72,3 +72,26 @@ img
 	
 .display-none
 	display none !important
+
+
+.loading-screen
+	position fixed
+	transform translateX(-50%)
+	left 50%
+	width 100%
+	top 0
+	height 100%
+	z-index 100
+	background-color white
+	background-image url('/icons/loading-spinner.gif')
+	background-size 40px 40px
+	background-position 50% 40%
+	
+	&.short
+		background-position 50% 100px
+		
+	&.blank
+		background-image none
+	
+	&.dark-grey
+		background-color #a4a4a7
