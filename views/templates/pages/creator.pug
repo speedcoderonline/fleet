@@ -21,12 +21,15 @@ block mainContent
 
 	script.
 		var userId = subpage.replace('creator-','')
+		var userEmail = ''
+		var userData
 
 		firebase.auth().onAuthStateChanged(function(user){
 
 		//action-button -> edit or add friend
 		firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
-			var userData = snapshot.val()
+			userData = snapshot.val()
+			userEmail = userData.email
 			console.log(userData)
 
 			document.getElementById('user-name').innerText = userData.firstname + ' ' + userData.lastname
@@ -35,17 +38,18 @@ block mainContent
 
 			//render skills
 
-			function renderSkill(title){
+			function renderSkill(title, isMainSkill){
 				var skillDiv = document.createElement('div')
 				skillDiv.innerText = title
 				skillDiv.classList.add('skill')
+				if(isMainSkill){skillDiv.classList.add('main-skill')}
 				document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
 			}
 
 			if(userData.skills){
 				firebase.database().ref('skills/').once("value", function(snapshot){
 					Object.values(userData.skills).forEach(function(mainSkill, idx){
-						renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'])
+						renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'], true)
 						Object.keys(mainSkill).forEach(function(subSkill, idx2){
 							renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
 						})
@@ -118,9 +122,23 @@ block mainContent
 				document.getElementById('profile-action-button').onclick = function(){
 					firebase.database().ref('users/creators/' + userId + '/requests/' + user.uid).set({
 						type: 'creator',
-						uid: user.uid,
+						id: user.uid,
 						date: (new Date()).getTime()
 					}).then(function(){
+						var currentUserName = ''
+						firebase.database().ref('users/creators/' + user.uid + '/firstname').once("value", function(snapshotFirstname){
+
+							currentUserName += snapshotFirstname.val()
+							
+							firebase.database().ref('users/creators/' + user.uid + '/lastname').once("value", function(snapshotLastname){
+
+								currentUserName += snapshotLastname.val()
+								
+								sendEmail(userEmail, 'Friend request from ' + currentUserName, 'Hi!<br><br>You have received a friend request from ' + currentUserName + '. Check out their profile and accept/deny the request on your "requests" page.')
+
+							})
+
+						})
 						popUp('Request sent')
 					})
 				}

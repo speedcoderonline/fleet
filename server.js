@@ -91,6 +91,22 @@ app.use(dbFunctions)
 const postHandlers = require('./server-functions/post-handlers.js') 
 app.use(postHandlers)
 
+app.get('/sendEmail/:info', sendFrontendEmail)
+
+function sendFrontendEmail(req, res) {
+	var params = req.params
+	var infoObj = params.info
+	var info = JSON.parse(infoObj)
+
+	var receiver = info.receiver
+	var subject = info.subject
+	var content = info.content + '<br><br><a href="www.fleetofcreators.com">Go to Fleet</a>'
+
+	sendEmail(receiver, subject, content)
+
+	res.send(true)
+}
+
 // Declaring Port
 const port = process.env.PORT || 8000
 

@@ -4,7 +4,7 @@ block mainContent
 	include ../elements/connections-menu.pug
 
 	
-	section
+	section#teams-requests
 		h5.title Teams
 		.content
 			//- .item
@@ -69,7 +69,7 @@ block mainContent
 
 						var choisesDiv = document.createElement('div')
 						choisesDiv.classList.add('choises-div')
-						itemDiv.appendChild(choisesDiv)
+						textWrapperDiv.appendChild(choisesDiv)
 
 						var acceptDiv = document.createElement('div')
 						acceptDiv.classList.add('accept')
@@ -109,6 +109,64 @@ block mainContent
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
 								popUp('Friend added, send a message!')
 								event.target.parentElement.parentElement.remove()
+							})
+						}
+						choisesDiv.appendChild(denyDiv)
+					})
+				}else if(request.val().type == 'team'){
+
+					firebase.database().ref('teams/' + request.val().uid).once("value", function(snapshot2){
+						var team = snapshot2.val()
+						var teamId = request.val().uid
+
+						if(!team){return}
+
+						var itemDiv = document.createElement('div')
+						itemDiv.classList.add('item')
+						document.querySelector('#teams-requests').querySelector('.content').appendChild(itemDiv)
+
+						var textWrapperDiv = document.createElement('div')
+						textWrapperDiv.classList.add('text-wrapper')
+						itemDiv.appendChild(textWrapperDiv)
+
+						var titleDiv = document.createElement('a')
+						titleDiv.classList.add('title')
+						titleDiv.innerText = team.name
+						titleDiv.href = '/team/' + snapshot2.key
+						textWrapperDiv.appendChild(titleDiv)
+
+						var choisesDiv = document.createElement('div')
+						choisesDiv.classList.add('choises-div')
+						textWrapperDiv.appendChild(choisesDiv)
+
+						var acceptDiv = document.createElement('div')
+						acceptDiv.classList.add('accept')
+						acceptDiv.classList.add('choise')
+						acceptDiv.onclick = function(event){
+
+							var milliSec = (new Date()).getTime()
+
+							firebase.database().ref('teams/' + teamId + '/members/' + user.uid).set(milliSec)
+							firebase.database().ref('chats/' + teamId + '/members/' + user.uid).set(milliSec)
+
+							firebase.database().ref('users/creators/' + user.uid + '/requests/' + snapshot2.key).remove().then(function(){
+								popUp('Team joined, send a message!')
+								event.target.parentElement.parentElement.parentElement.remove()
+							})
+
+							firebase.database().ref('users/creators/' + user.uid + '/chats/' + teamId).set(milliSec)
+							firebase.database().ref('users/creators/' + user.uid + '/teams/' + teamId).set(milliSec)
+						}
+						choisesDiv.appendChild(acceptDiv)
+
+						var denyDiv = document.createElement('div')
+						denyDiv.classList.add('deny')
+						denyDiv.classList.add('choise')
+						denyDiv.onclick = function(event){
+
+							firebase.database().ref('users/teams/' + user.uid + '/requests/' + snapshot2.key).remove().then(function(){
+								popUp('Team denied')
+								event.target.parentElement.parentElement.parentElement.remove()
 							})
 						}
 						choisesDiv.appendChild(denyDiv)

@@ -1,0 +1,162 @@
+extends ../index
+block mainContent
+
+	.profile-wrapper
+		header
+			.action-button.display-none#profile-action-button
+			h2.name#user-name
+		.profile-info
+			.members#members
+			p.description#user-description
+			.skills#user-skills
+				h4.title Knowledge
+				.wrapper
+			.projects#user-projects
+				h4.title Work
+				.wrapper
+
+
+	script.
+		var teamId = subpage
+
+		firebase.auth().onAuthStateChanged(function(user){
+
+		//action-button -> edit or add friend
+		firebase.database().ref('teams/' + teamId).once("value", function(snapshot){
+			var teamData = snapshot.val()
+			console.log(teamData)
+
+			document.getElementById('user-name').innerText = teamData.name
+			document.getElementById('user-description').innerText = teamData.description || ''
+			//document.getElementById('user-location').innerText = teamData.city + ', ' + teamData.country
+
+			//render skills
+
+			function renderSkill(title, isMainSkill){
+				var skillDiv = document.createElement('div')
+				skillDiv.innerText = title
+				skillDiv.classList.add('skill')
+				if(isMainSkill){skillDiv.classList.add('main-skill')}
+				document.getElementById('user-skills').querySelector('.wrapper').appendChild(skillDiv)
+			}
+
+			if(teamData.skills){
+				firebase.database().ref('skills/').once("value", function(snapshot){
+					Object.values(teamData.skills).forEach(function(mainSkill, idx){
+						renderSkill(snapshot.val()[Object.keys(teamData.skills)[idx]]['name'], true)
+						Object.keys(mainSkill).forEach(function(subSkill, idx2){
+							renderSkill(Object.values(snapshot.val()[Object.keys(teamData.skills)[idx]]['subSkills'])[idx2]['name'])
+						})
+					})
+				})
+			}			
+
+			//render Projects
+
+			function renderProjects(title, description, link){
+				if(link){
+					var wrapperDiv = document.createElement('a')
+					wrapperDiv.classList.add('link')
+				}else{
+					var wrapperDiv = document.createElement('div')
+				}
+				wrapperDiv.classList.add('project')
+				document.getElementById('user-projects').querySelector('.wrapper').appendChild(wrapperDiv)
+
+				var imageDiv = document.createElement('div')
+				imageDiv.classList.add('image')
+				wrapperDiv.appendChild(imageDiv)
+
+				var contentDiv = document.createElement('div')
+				contentDiv.classList.add('content')
+				wrapperDiv.appendChild(contentDiv)
+
+				var titleDiv = document.createElement('h5')
+				titleDiv.classList.add('title')
+				titleDiv.innerText = title
+				contentDiv.appendChild(titleDiv)
+
+				var descriptionDiv = document.createElement('p')
+				descriptionDiv.classList.add('p-description')
+				descriptionDiv.innerText = description
+				contentDiv.appendChild(descriptionDiv)
+
+				if(link){
+					wrapperDiv.href = link
+				}
+				
+			}
+
+			if(teamData.projects){
+				Object.values(teamData.projects).forEach(function(project, idx){
+					renderProjects(project.title, project.description, project.link)
+				})
+			}
+
+			if (user) {
+
+				if(Object.keys(teamData.members).indexOf(user.uid) > -1){
+					document.getElementById('profile-action-button').classList.remove('display-none')
+					document.getElementById('profile-action-button').innerText = 'Team settings'
+						document.getElementById('profile-action-button').onclick = function(){
+						location.href='/editteam/' + teamId
+					}
+				}
+			}
+
+
+
+			snapshot.child('members').forEach(function(member){
+				firebase.database().ref('users/creators/' + member.key).once("value", function(snapshot2){
+					var creator = snapshot2.val()
+
+					var itemDiv = document.createElement('a')
+					itemDiv.href = '/user/creator-' + member.uid
+					itemDiv.classList.add('item')
+					document.querySelector('#members').appendChild(itemDiv)
+
+					var textWrapperDiv = document.createElement('div')
+					textWrapperDiv.classList.add('text-wrapper')
+					itemDiv.appendChild(textWrapperDiv)
+
+					var titleDiv = document.createElement('div')
+					titleDiv.classList.add('title')
+					titleDiv.innerText = creator.firstname + ' ' + creator.lastname
+					textWrapperDiv.appendChild(titleDiv)
+
+					var descriptionDiv = document.createElement('div')
+					descriptionDiv.classList.add('description')
+					descriptionDiv.innerText = creator.description || ''
+					textWrapperDiv.appendChild(descriptionDiv)
+				})
+			})
+		})
+		})
+		
+		//- if (user) {
+		//- 	document.getElementById('profile-action-button').classList.remove('display-none')
+		//- 	if(firebase.auth().currentUser.uid == teamId){
+		//- 		document.getElementById('profile-action-button').innerText = 'Edit Profile'
+		//- 		document.getElementById('profile-action-button').onclick = function(){
+		//- 			location.href='/editcreator'
+		//- 		}
+		//- 	}else{
+		//- 		document.getElementById('profile-action-button').innerText = 'Add Friend'
+		//- 		document.getElementById('profile-action-button').onclick = function(){
+		//- 			firebase.database().ref('teams/' + teamId + '/requests/' + user.uid).set({
+		//- 				type: 'creator',
+		//- 				id: user.uid,
+		//- 				date: (new Date()).getTime()
+		//- 			}).then(function(){
+		//- 				popUp('Request sent')
+		//- 			})
+		//- 		}
+		//- 	}
+		//- }
+		
+
+		
+
+
+
+		

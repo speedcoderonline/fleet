@@ -1,5 +1,7 @@
 [data-page='editteam']
 	
+	@import "elements/profilecard"
+	
 	.main-content
 		overflow auto
 		background #4A4D4F
@@ -26,24 +28,36 @@
 				color rgba(black, .6)
 				font-size 17px
 		
-		.save-button
-			background $cyan
-			padding 11px 0
-			width 150px
-			color white
-			margin 20px
-			font-size 18px
-			border-radius 8px
-			text-align center
+		.action-button-wrapper
 			position fixed
 			bottom 0 
-			right 0
-			box-shadow -2px 5px 15px rgba(black,.15)
 			z-index 100
-			cursor pointer
+			right 0
+			width 100%
+			text-align right
 			
-			@media(max-width 500px)
-				width calc(100% - 20px*2)
+			.action-button
+				padding 11px 0
+				width 150px
+				color white
+				margin 20px
+				font-size 18px
+				border-radius 8px
+				box-shadow -2px 5px 15px rgba(black,.15)
+				cursor pointer
+				text-align center
+				display inline-block
+				
+				@media(max-width 500px)
+					width calc(50% - 20px*2)
+		
+			.save-button
+				background $cyan
+			
+			.delete-button
+				background $pink
+				
+				
 		
 		#participant-picker
 			position fixed
@@ -170,28 +184,7 @@
 							margin-bottom 6px
 					
 					&.skills
-						.skill
-							background linear-gradient(to right, #97A0D1, #D48F89)
-							padding 15px 0
-							width 160px
-							display inline-block
-							margin 7px
-							border-radius 8px
-							box-shadow -2px 5px 15px rgba(black,.15)
-							text-align center
-							width: calc(33% - 14px);
-							
-							@media(max-width 500px)
-								width: calc(50% - 14px);
-							
-							*
-								display inline-block
-							.checkmark
-								margin-right 5px
-								overflow hidden
-								border-radius 4px
-							.title
-								color white
+						@import "elements/skill"
 					
 						// .my-wrapper
 							
@@ -235,7 +228,15 @@
 								.content
 									display block
 					
-
+					&.members
+						.add
+							margin 20px 0
+							padding 15px 20px 
+							background lighten($lighter-grey,10)
+							border-radius 8px
+							color #7CABB1
+							cursor pointer
+							display inline-block
 					&.projects
 						.edit-wrapper
 							position relative

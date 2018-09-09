@@ -1,4 +1,4 @@
-[data-page='creator']
+[data-page='team']
 	
 	.main-content
 		overflow auto
@@ -48,21 +48,17 @@
 					background white
 					border-radius 8px
 					color #7CABB1
-					background-size contain
-					background-repeat no-repeat
 					cursor pointer
 					
-					&.add-friend
-						background-image url('../icons/addcontact.png')
-					&.edit
-						background-image url('../icons/settings.png')
-						
-			
 			.profile-info
 				width 90%
 				max-width 800px
 				margin auto
 				padding-top 60px
+				
+				#members
+					@import "elements/profilecard"
+
 				p.description
 					text-align center
 					margin-top 15px

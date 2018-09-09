@@ -23,11 +23,11 @@ block mainContent
 					input.text-input.city(placeholder='City' onkeydown='changesMade()')
 				//input#location-search(placeholder = 'Your city')
 				
-			section.skills#user-skills
+			section.skills#profile-skills
 				h4.title Competenses
 				.my-wrapper
 				.potential-wrapper
-					header(onclick='_("user-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
+					header(onclick='_("profile-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
 						.title Add competens
 						.expand
 					.content
@@ -46,7 +46,7 @@ block mainContent
 			//	.add-new(onclick='newProject()') Add
 
 	
-
+	script(src='/javascript/renderskills.js')
 	script.
 		//AIzaSyB9uz6sZTjEZOIE6Z_GWoXNyxNpsT33v70
 
@@ -54,12 +54,12 @@ block mainContent
 		
 		var startCountry
 		var startCity
-		var userSkills
+		var profileSkills
 		var saveLocation
-		var renderAllSkills
 		var renderAllProjects
 		var currentProjectId = (new Date).getTime()
 		var newUser = getCookie('newUser')
+		var profileId
 
 		if(newUser){
 			_('save-button').innerText = 'Continue'
@@ -75,7 +75,7 @@ block mainContent
 		firebase.auth().onAuthStateChanged(function(user) {
 			firebase.database().ref('users/creators/' + currentUser().uid).once("value", function(snapshot){
 				var userData = snapshot.val()
-				userSkills = userData.skills || {}
+				profileSkills = userData.skills || {}
 
 				startCountry = userData.country || ''
 				startCity = userData.city || ''
@@ -124,119 +124,7 @@ block mainContent
 					startCity = city
 				}
 
-				renderAllSkills =  function(userSkills){
-					firebase.database().ref('skills').once("value", function(snapshot){
-
-						[document.getElementById('user-skills').querySelector('.my-wrapper'), document.getElementById('user-skills').querySelector('.potential-wrapper').querySelector('.content')].forEach(function(el){
-							while (el.firstChild) {
-								el.removeChild(el.firstChild);
-							}
-						})
-
-						var allSkills = snapshot.val()
-
-						Object.values(allSkills).forEach(function(mainSkill, idx){
-							var mainSkillId = Object.keys(allSkills)[idx]
-							if(userSkills){
-								var userMainSkill = userSkills[mainSkillId]
-							}else{
-								var userMainSkill = false
-							}
-							renderSkill(Object.values(allSkills)[idx].name, mainSkillId, userMainSkill, true)
-
-							if(userMainSkill){
-								Object.values(mainSkill.subSkills).forEach(function(subSkill, idx2){
-									var subSkillId = Object.keys(mainSkill.subSkills)[idx2]
-									if(userMainSkill){
-										var userSubSkill = userSkills[mainSkillId][subSkillId]
-									}else{
-										var userSubSkill = false
-									}
-									
-									renderSkill(subSkill.name, subSkillId, userSubSkill, false, mainSkillId)
-								})
-							}
-							
-						})
-					})
-					//render skills
-
-					function renderSkill(title, id, checked, isMainSkill, mainSkillId){
-						var skillDiv = document.createElement('div')
-						skillDiv.classList.add('skill')
-						document.getElementById('user-skills').querySelector('.potential-wrapper').querySelector('.content').appendChild(skillDiv)
-
-						var checkmark = document.createElement('input')
-						checkmark.type = 'checkbox'
-						checkmark.dataset.skillId = id
-						checkmark.id = id
-						checkmark.dataset.isMainSkill = isMainSkill
-						checkmark.dataset.mainSkillId = mainSkillId
-						checkmark.classList.add('checkmark')
-						checkmark.checked = checked
-						if(!isMainSkill){checkmark.classList.add('main-' + mainSkillId)}
-						skillDiv.appendChild(checkmark)
-
-						checkmark.onclick = function(el){
-
-							//- if(el.target.dataset.isMainSkill == 'true'){
-							//- 	if(!el.target.checked) document.querySelectorAll('.main-' + el.target.dataset.skillId).forEach(function(el2){
-							//- 		el2.checked = false
-							//- 	})
-							//- 	userSkills[el.target.dataset.skillId] = el.target.checked || null
-							//- }else{
-							//- 	if(!_(el.target.dataset.mainSkillId).checked){
-							//- 		el.target.checked = false
-							//- 		return
-							//- 	}
-
-							//- 	if(typeof(userSkills[el.target.dataset.mainSkillId]) == "boolean"){
-							//- 		userSkills[el.target.dataset.mainSkillId] = {}
-							//- 	}
-							//- 	userSkills[el.target.dataset.mainSkillId][el.target.dataset.skillId] = el.target.checked || null
-
-							//- 	if(typeof(userSkills[el.target.dataset.mainSkillId]) !== "boolean"){
-
-							//- 		var onlyNull = true
-
-							//- 		Object.values(userSkills[el.target.dataset.mainSkillId]).forEach(function(val){
-							//- 			if(val !== null){onlyNull = false}
-							//- 		})
-
-							//- 		if(onlyNull){
-							//- 			userSkills[el.target.dataset.mainSkillId] = true
-							//- 		}
-							//- 	}
-							//- }
-							//- console.log(userSkills)
-
-							if(el.target.dataset.isMainSkill == 'true'){
-								var skillPath = el.target.dataset.skillId
-							}else{
-								var skillPath = el.target.dataset.mainSkillId + '/' + el.target.dataset.skillId
-							}
-
-							firebase.database().ref('users/creators/' + currentUser().uid + '/skills/' + skillPath).set(el.target.checked).then(function(){
-								reRenderAllSkills()
-							})
-							
-						}	
-
-						var titleP = document.createElement('p')
-						titleP.innerText = title
-						titleP.classList.add('title')
-						if(isMainSkill){titleP.style.fontWeight = "500"}
-						skillDiv.appendChild(titleP)
-
-						if(checked){
-							var enabledSkillDiv = skillDiv.cloneNode(true)
-							document.getElementById('user-skills').querySelector('.my-wrapper').appendChild(enabledSkillDiv)
-							enabledSkillDiv.querySelector('.checkmark').onclick = checkmark.onclick
-						}
-					}
-				}
-
-				renderAllSkills(userData.skills)
+				renderAllSkills(userData.skills, 'creator', currentUser().uid)
 
 				//render Projects
 
@@ -291,6 +179,7 @@ block mainContent
 
 			wrapperDiv.onclick = function(event){
 				currentProjectId = event.currentTarget.dataset.id
+				_('project-title').scrollIntoView()
 				_('project-title').value = event.currentTarget.querySelector('.text-wrapper').querySelector('.title').innerText
 				_('project-description').innerText = event.currentTarget.querySelector('.text-wrapper').querySelector('.description').innerText
 				_('project-link').value = event.currentTarget.querySelector('.link').innerText
@@ -316,8 +205,8 @@ block mainContent
 			
 			firebase.database().ref('users/creators/' + currentUser().uid + '/skills').once("value", function(snapshot){
 
-				userSkills = snapshot.val()
-				renderAllSkills(userSkills)
+				profileSkills = snapshot.val()
+				renderAllSkills(profileSkills, 'creator', currentUser().uid)
 			})
 		}
 
@@ -331,7 +220,7 @@ block mainContent
 				lastname: _('last-name').value,
 				description: _('user-description').innerText,
 			}).then(function(){
-				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(userSkills).then(function(){
+				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(profileSkills).then(function(){
 					if(!newUser){
 						popUp('Changes saved.')
 					}else{

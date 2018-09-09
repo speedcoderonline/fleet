@@ -55,6 +55,8 @@ block mainContent
 
 			myChats.forEach(function(myChatId, idx){
 				firebase.database().ref('chats/' + myChatId + '/members').once("value", function(snapshotMembers){
+					if(Object.keys(snapshotMembers.val()).length < 2){return}
+
 					var itemDiv = document.createElement('div')
 					itemDiv.classList.add('contact')
 					itemDiv.id = myChatId
@@ -84,27 +86,36 @@ block mainContent
 					titleH5.innerText = ''
 					Object.keys(snapshotMembers.val()).forEach(function(memberId, idx){
 						var currentUserName = ''
-						
-						firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshotFirstname){
-							if(memberId != user.uid){
-								if((idx != 0)&&(Object.keys(snapshotMembers.val()).length != 2)){
-									titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
-								}else{
-									titleH5.innerText += snapshotFirstname.val()
-								}							}
 
-							currentUserName = snapshotFirstname.val()
-							
-						})
-						firebase.database().ref('users/creators/' + memberId + '/lastname').once("value", function(snapshotLastname){
-							if(memberId != user.uid){
-								titleH5.innerText += ' ' + snapshotLastname.val()
+						firebase.database().ref('teams/' + myChatId + '/name').once("value", function(snapshotName){
+
+							if(snapshotName.val()){
+								titleH5.innerText = snapshotName.val()
+								return
 							}
-							currentUserName += ' ' + snapshotLastname.val()
-							userNames[memberId] = currentUserName
-							document.cookie = "userNames=" + JSON.stringify(userNames) + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
-						}).then(function(){
-							if(memberId == user.uid){idx = idx-1}
+						
+							firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshotFirstname){
+								if(memberId != user.uid){
+									if((idx != 0)&&(Object.keys(snapshotMembers.val()).length != 2)){
+										titleH5.innerText += ',' + ' ' + snapshotFirstname.val()
+									}else{
+										titleH5.innerText += snapshotFirstname.val()
+									}							
+								}
+
+								currentUserName = snapshotFirstname.val()
+								
+							})
+							firebase.database().ref('users/creators/' + memberId + '/lastname').once("value", function(snapshotLastname){
+								if(memberId != user.uid){
+									titleH5.innerText += ' ' + snapshotLastname.val()
+								}
+								currentUserName += ' ' + snapshotLastname.val()
+								userNames[memberId] = currentUserName
+								document.cookie = "userNames=" + JSON.stringify(userNames) + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
+							}).then(function(){
+								if(memberId == user.uid){idx = idx-1}
+							})
 						})
 
 					})

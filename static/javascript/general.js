@@ -150,7 +150,7 @@ function validateEmail(email) {
 
 
 
-function popUp(content){
+function popUp(content, callback){
 	var pageOverlay = document.createElement('div')
 	pageOverlay.classList.add('page-overlay')
 	document.body.appendChild(pageOverlay)
@@ -164,6 +164,12 @@ function popUp(content){
 	confirm.classList.add('confirm')
 
 	confirm.setAttribute('onclick', 'closePopUp()')
+	// if(callback){
+	// 	confirm.setAttribute('onclick', var hej = function(){
+	// 		callback()
+	// 		closePopUp()
+	// 	})
+	// }
 	popUpBox.appendChild(text)
 	popUpBox.appendChild(confirm)
 
@@ -192,4 +198,17 @@ function getCookie(name) {
 var deleteCookie = function(name) {
     document.cookie = name+'=; Max-Age=-99999999;';  
     return true
+}
+
+function sendEmail(receiver, subject, content){
+	content = content.replace(/(?:\r\n|\r|\n)/g, '<br>')
+	var emailInfo = {receiver:receiver, subject:subject, content:content}
+	emailInfo = encodeURIComponent(JSON.stringify(emailInfo))
+	serverData(
+		'/sendEmail/' + emailInfo, 
+		function(data) { 
+			console.log(data)
+		},
+		function(xhr) { console.error(xhr); }
+	)
 }

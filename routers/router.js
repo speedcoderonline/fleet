@@ -29,6 +29,9 @@ module.exports = (function() {
     {page:'creator',path:'user/creator-:id', dataGen: req=>{
       return {user:req.params.id}
     }},
+    {page:'team',path:'team/:id', dataGen: req=>{
+      return {user:req.params.id}
+    }},
     {page:'editteam',path:'editteam/:id', dataGen: req=>{
       return {user:req.params.id}
     }},

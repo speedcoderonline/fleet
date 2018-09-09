@@ -1,7 +1,10 @@
 extends ../index
 block mainContent
 
-	.save-button#save-button(onclick = 'saveEdits()') Save
+	.action-button-wrapper
+		.action-button.delete-button#delete-button(onclick = 'abandonTeam()') Abandon Team
+		.action-button.save-button#save-button(onclick = 'saveEdits()') Save
+		
 	#participant-picker.display-none
 		.close(onclick="_('participant-picker').classList.add('display-none');while (_('participant-picker').querySelector('.wrapper').firstChild) {_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);}") Close
 		.wrapper
@@ -15,16 +18,16 @@ block mainContent
 					h4.title Name
 					input.text-input.name#name(placeholder='Team name' onkeydown='changesMade()')
 
-			section.participants#team-participants
-				h4.title Participants
-				.wrapper#membersWrapper
-					.add-card(onclick = 'openParticipantPicker()') New Participant
+			section.members#team-members
+				h4.title Members
+				.wrapper.small-items#membersWrapper
+					.add(onclick = 'openParticipantPicker()') New Participant
 
-			section.skills#team-skills
+			section.skills#profile-skills
 				h4.title Competenses
 				.my-wrapper
 				.potential-wrapper
-					header(onclick='_("team-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
+					header(onclick='_("profile-skills").querySelector(".potential-wrapper").classList.toggle("expanded")')
 						.title Add competens
 						.expand
 					.content
@@ -44,42 +47,56 @@ block mainContent
 			//	.add-new(onclick='newProject()') Add
 
 	
-
+	script(src='/javascript/renderskills.js')
 	script.
 		//AIzaSyB9uz6sZTjEZOIE6Z_GWoXNyxNpsT33v70
 		var teamId = subpage
 		
 		var startCountry
 		var startCity
-		var teamSkills
+		var profileSkills
 		var saveLocation
-		var renderAllSkills
 		var renderAllProjects
 		var currentProjectId = (new Date).getTime()
 		var userId
 		var newTeam = getCookie('newTeam')
 		var noNameSaved = getCookie('newTeam')
+		var membersArray = []
+		var membersNames = {}
+		var teamName = ''
 
 		if(newTeam){
 			_('save-button').innerText = 'Create'
 			_('save-button').classList.remove('display-none')
+		}else{
+			_('save-button').classList.remove('display-none')
+			_('save-button').innerText = 'Save'
 		}
 
 		function changesMade(){
 			_('save-button').classList.remove('display-none')
 		}
 
+
+
 		//action-button -> edit or add friend
 		firebase.auth().onAuthStateChanged(function(user) {
 			userId = user.uid
 			firebase.database().ref('teams/' + teamId).once("value", function(snapshot){
 				var teamData = snapshot.val() || {}
-				teamSkills = teamData.skills || {}
+				profileSkills = teamData.skills || {}
 				if(teamData.members){
+					membersArray = Object.keys(teamData.members)
+
 					Object.keys(teamData.members).forEach(function(memberId){
 						firebase.database().ref('users/creators/' + memberId).once("value", function(snapshot){
+							membersNames[memberId] = snapshot.val().firstname + ' ' + snapshot.val().lastname
 							createCard(snapshot.val(), '#membersWrapper')
 						})
+					})
+				}else{
+					firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
+						createCard(snapshot.val(), '#membersWrapper')
 					})
 				}
 				
@@ -103,6 +120,7 @@ block mainContent
 				//try{
 
 				document.getElementById('name').value = teamData.name || 'New team'
+				teamName = teamData.name || 'New team'
 				//- document.getElementById('team-location').querySelector('.country').value = teamData.country
 				//- document.getElementById('team-location').querySelector('.city').value = teamData.city
 
@@ -129,120 +147,7 @@ block mainContent
 				//- 	startCity = city
 				//- }
 
-				renderAllSkills =  function(teamSkills){
-					firebase.database().ref('skills').once("value", function(snapshot){
-
-						[document.getElementById('team-skills').querySelector('.my-wrapper'), document.getElementById('team-skills').querySelector('.potential-wrapper').querySelector('.content')].forEach(function(el){
-							while (el.firstChild) {
-								el.removeChild(el.firstChild);
-							}
-						})
-
-						var allSkills = snapshot.val()
-
-						Object.values(allSkills).forEach(function(mainSkill, idx){
-							var mainSkillId = Object.keys(allSkills)[idx]
-							if(teamSkills){
-								var teamMainSkill = teamSkills[mainSkillId]
-							}else{
-								var teamMainSkill = false
-							}
-							renderSkill(Object.values(allSkills)[idx].name, mainSkillId, teamMainSkill, true)
-
-							if(teamMainSkill){
-								Object.values(mainSkill.subSkills).forEach(function(subSkill, idx2){
-									var subSkillId = Object.keys(mainSkill.subSkills)[idx2]
-									if(teamMainSkill){
-										var teamSubSkill = teamSkills[mainSkillId][subSkillId]
-									}else{
-										var teamSubSkill = false
-									}
-									
-									renderSkill(subSkill.name, subSkillId, teamSubSkill, false, mainSkillId)
-								})
-							}
-							
-						})
-					})
-					//render skills
-
-					function renderSkill(title, id, checked, isMainSkill, mainSkillId){
-						var skillDiv = document.createElement('div')
-						skillDiv.classList.add('skill')
-						document.getElementById('team-skills').querySelector('.potential-wrapper').querySelector('.content').appendChild(skillDiv)
-
-						var checkmark = document.createElement('input')
-						checkmark.type = 'checkbox'
-						checkmark.dataset.skillId = id
-						checkmark.id = id
-						checkmark.dataset.isMainSkill = isMainSkill
-						checkmark.dataset.mainSkillId = mainSkillId
-						checkmark.classList.add('checkmark')
-						checkmark.checked = checked
-						if(!isMainSkill){checkmark.classList.add('main-' + mainSkillId)}
-						skillDiv.appendChild(checkmark)
-
-						checkmark.onclick = function(el){
-
-							//- if(el.target.dataset.isMainSkill == 'true'){
-							//- 	if(!el.target.checked) document.querySelectorAll('.main-' + el.target.dataset.skillId).forEach(function(el2){
-							//- 		el2.checked = false
-							//- 	})
-							//- 	teamSkills[el.target.dataset.skillId] = el.target.checked || null
-							//- }else{
-							//- 	if(!_(el.target.dataset.mainSkillId).checked){
-							//- 		el.target.checked = false
-							//- 		return
-							//- 	}
-
-							//- 	if(typeof(teamSkills[el.target.dataset.mainSkillId]) == "boolean"){
-							//- 		teamSkills[el.target.dataset.mainSkillId] = {}
-							//- 	}
-							//- 	teamSkills[el.target.dataset.mainSkillId][el.target.dataset.skillId] = el.target.checked || null
-
-							//- 	if(typeof(teamSkills[el.target.dataset.mainSkillId]) !== "boolean"){
-
-							//- 		var onlyNull = true
-
-							//- 		Object.values(teamSkills[el.target.dataset.mainSkillId]).forEach(function(val){
-							//- 			if(val !== null){onlyNull = false}
-							//- 		})
-
-							//- 		if(onlyNull){
-							//- 			teamSkills[el.target.dataset.mainSkillId] = true
-							//- 		}
-							//- 	}
-							//- }
-							//- console.log(teamSkills)
-
-							if(el.target.dataset.isMainSkill == 'true'){
-								var skillPath = el.target.dataset.skillId
-							}else{
-								var skillPath = el.target.dataset.mainSkillId + '/' + el.target.dataset.skillId
-							}
-
-							firebase.database().ref('teams/' + teamId + '/skills/' + skillPath).set(el.target.checked).then(function(){
-								reRenderAllSkills()
-								if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
-							})
-							
-						}	
-
-						var titleP = document.createElement('p')
-						titleP.innerText = title
-						titleP.classList.add('title')
-						if(isMainSkill){titleP.style.fontWeight = "500"}
-						skillDiv.appendChild(titleP)
-
-						if(checked){
-							var enabledSkillDiv = skillDiv.cloneNode(true)
-							document.getElementById('team-skills').querySelector('.my-wrapper').appendChild(enabledSkillDiv)
-							enabledSkillDiv.querySelector('.checkmark').onclick = checkmark.onclick
-						}
-					}
-				}
-
-				renderAllSkills(teamData.skills)
+				renderAllSkills(teamData.skills, 'team', teamId)
 
 				//render Projects
 
@@ -297,6 +202,7 @@ block mainContent
 
 			wrapperDiv.onclick = function(event){
 				currentProjectId = event.currentTarget.dataset.id
+				_('project-title').scrollIntoView()
 				_('project-title').value = event.currentTarget.querySelector('.text-wrapper').querySelector('.title').innerText
 				_('project-description').innerText = event.currentTarget.querySelector('.text-wrapper').querySelector('.description').innerText
 				_('project-link').value = event.currentTarget.querySelector('.link').innerText
@@ -322,8 +228,8 @@ block mainContent
 			
 			firebase.database().ref('teams/' + teamId + '/skills').once("value", function(snapshot){
 
-				teamSkills = snapshot.val()
-				renderAllSkills(teamSkills)
+				profileSkills = snapshot.val()
+				renderAllSkills(profileSkills, 'team', teamId)
 			})
 		}
 
@@ -336,7 +242,7 @@ block mainContent
 			firebase.database().ref('teams/' + teamId).update({
 				name: _('name').value,
 			}).then(function(){
-				firebase.database().ref('teams/' + teamId + '/skills').set(teamSkills).then(function(){
+				firebase.database().ref('teams/' + teamId + '/skills').set(profileSkills).then(function(){
 					if(!newTeam){
 						popUp('Changes saved.')
 					}else{
@@ -375,7 +281,7 @@ block mainContent
 		}
 
 		function saveProject(){
-			if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
+			if(noNameSaved){newTeamSave()}
 			firebase.database().ref('teams/' + teamId + '/projects/' + currentProjectId).set({
 				title: _('project-title').value,
 				description: _('project-description').innerText,
@@ -408,6 +314,7 @@ block mainContent
 			firebase.database().ref('users/creators/' + userId + '/friends').once("value", function(snapshot){
 				console.log(snapshot.val())
 				snapshot.forEach(function(friendId){
+					if(membersArray.indexOf(friendId.key) > -1){return}
 					firebase.database().ref('users/creators/' + friendId.key + '/firstname').once("value", function(snapshot){
 						var friendDiv = document.createElement('div')
 						friendDiv.classList.add('friend')
@@ -416,17 +323,23 @@ block mainContent
 						friendDiv.innerText = snapshot.val()
 
 						friendDiv.onclick = function(event){
-							firebase.database().ref('teams/' + teamId + '/members/' + friendId.key).set((new Date()).getTime())
+							if(noNameSaved){newTeamSave()}
+
+							firebase.database().ref('users/creators/' + friendId.key + '/requests/' + teamId).set({
+								type: 'team',
+								uid: teamId,
+								date: (new Date()).getTime()
+							}).then(function(){
+								popUp('Request sent')
+							})
+
 							_('participant-picker').classList.add('display-none')
 							while (_('participant-picker').querySelector('.wrapper').firstChild) {
 								_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);
 							}
-							if(noNameSaved){firebase.database().ref('teams/' + teamId).update({name: _('name').value,});deleteCookie("newTeam")}
-							firebase.database().ref('users/creators/' + friendId.key).once("value", function(snapshot){
-								createCard(snapshot.val(), '#membersWrapper')
-							})
 							
-							//_('team-participants').querySelector('.wrapper')
+							
+							//_('team-members').querySelector('.wrapper')
 							//add friend to team and editpage, then close popup
 						}
 					}).then(firebase.database().ref('users/creators/' + friendId.key + '/lastname').once("value", function(snapshot){
@@ -436,6 +349,238 @@ block mainContent
 				})
 			})
 		}
+
+		function newTeamSave(){
+			firebase.database().ref('teams/' + teamId).update({name: _('name').value,})
+			firebase.database().ref('users/creators/' + userId + '/teams/' + teamId).set((new Date()).getTime())
+			firebase.database().ref('users/creators/' + userId + '/chats/' + teamId).set((new Date()).getTime())
+			deleteCookie("newTeam")
+			firebase.database().ref('teams/' + teamId + '/members/' + userId).set((new Date()).getTime())
+			firebase.database().ref('chats/' + teamId).set({
+				latestAction:(new Date()).getTime(),
+				type:'team',
+				members:{
+					[userId]:(new Date()).getTime()
+				}
+			})
+			noNameSaved = false
+		}
+
+		function abandonTeam(){
+			firebase.database().ref('users/creators/' + userId + '/chats/' + teamId).remove()
+			firebase.database().ref('users/creators/' + userId + '/teams/' + teamId).remove()
+			firebase.database().ref('teams/' + teamId + '/members').once("value", function(snapshot){
+				if(snapshot.numChildren()<=1 && snapshot.val()[userId]){
+					firebase.database().ref('teams/' + teamId).remove()
+					firebase.database().ref('chats/' + teamId).remove()
+				}else{
+					firebase.database().ref('teams/' + teamId + '/members/' + userId).remove()
+					firebase.database().ref('chats/' + teamId + '/members/' + userId).remove()
+					Object.keys(snapshot.val()).forEach(function(memberId){
+						if(memberId != userId){
+							firebase.database().ref('users/creators/' + memberId + '/email').once("value", function(emailSnapshot){
+								sendEmail(emailSnapshot.val(), membersNames[userId] + ' has left ' + teamName, 'Hi ' + membersNames[memberId] + '!<br><br>' + membersNames[userId] + ' has left the team ' + teamName + '. If ' + membersNames[userId] + ' wants to join the team again, you can invite him in the team settings.')
+							})
+
+						}
+
+					})
+				}
+
+				window.location = '/friends'
+				
+			})
+			
+		}
+
+		function addAllSkills(){
+			firebase.database().ref('skills/').set({
+				film:{
+					name: 'Film',
+					subSkills:{
+						director:{
+							name: 'Director'
+						},	 
+						producer:{
+							name: 'Producer'
+						},	
+						filmmaker:{
+							name: 'Filmmaker'
+						},	
+						videoEditor:{
+							name: 'Video Editor'
+						},	
+						sound:{
+							name: 'Sound'
+						},	
+						specialEffects:{
+							name: 'Special Effects'
+						},	
+						scriptwriter:{
+							name: 'Scriptwriter'
+						},	
+						light:{
+							name: 'Light'
+						},	
+						actor:{
+							name: 'Actor'
+						},	
+						voiceActor:{
+							name: 'Voice Actor'
+						},	
+						['2DAnimation']:{
+							name: '2D Animation'
+						},	
+						['3DAnimation']:{
+							name: '3D Animation'
+						},	
+					},
+				},
+					
+
+				photo:{
+					name: 'Photo',
+					subSkills:{
+						photographer:{
+							name: 'Photographer'
+						},	
+						photoEditing:{
+							name: 'Photo Editing'
+						},	
+						model:{
+							name: 'Model'
+						},	
+					},
+				},
+					
+
+				design:{
+					name: 'Design',
+					subSkills:{
+						['2DIllustration']:{
+							name: '2D Illustration'
+						},	
+						['3DIllustration']:{
+							name: '3D Illustration'
+						},	
+						graphicDesign:{
+							name: 'Graphic Design'
+						},
+						productDesigner:{
+							name: 'Product Designer'
+						},	
+						advertising:{
+							name: 'Advertising'
+						},	
+						socialMedia:{
+							name: 'Social Media'
+						},	
+						logo:{
+							name: 'Logo'
+						},	
+						photoshop:{
+							name: 'Photoshop'
+						},	
+					},
+				},
+					
+
+
+				programming:{
+					name: 'Programming',
+					subSkills:{
+						frontend:{
+							name: 'Frontend'
+						},	
+						backend:{
+							name: 'Backend'
+						},	
+						design:{
+							name: 'Design'
+						},	
+						web:{
+							name: 'Web'
+						},	
+						ios:{
+							name: 'iOS'
+						},	
+						android:{
+							name: 'Android'
+						},	
+						hardware:{
+							name: 'Hardware'
+						},	
+					},
+				},
+					
+
+				music:{
+					name: 'Music',
+					subSkills:{
+						producer:{
+							name: 'Producer'
+						},	
+						dj:{
+							name: 'DJ'
+						},	
+						singing:{
+							name: 'Singing'
+						},	
+						guitar:{
+							name: 'Guitar'
+						},	
+						bass:{
+							name: 'Bass'
+						},	
+						drums:{
+							name: 'Drums'
+						},	
+						piano:{
+							name: 'Piano'
+						},	
+						trumpet:{
+							name: 'Trumpet'
+						},	
+						saxophone:{
+							name: 'Saxophone'
+						},	
+						clarinet:{
+							name: 'Clarinet'
+						},	 
+						violin:{
+							name: 'Violin'
+						},	
+						cello:{
+							name: 'Cello'
+						},	
+					},
+				},
+					
+
+				//- entrepreneur:{
+				//- 	name: 'Entrepreneur',
+				//- 	subSkills:{
+				//- 		economy:{
+				//- 			name: 'Economy'
+				//- 		},	
+				//- 		marketing:{
+				//- 			name: 'Marketing'
+				//- 		},	
+				//- 		administration:{
+				//- 			name: 'Administration'
+				//- 		},	
+				//- 		projectManager:{
+				//- 			name: 'Project Manager'
+				//- 		},	
+				//- 		tech:{
+				//- 			name: 'Tech'
+				//- 		},	
+				//- 	},
+				//- }
+					
+			})
+		}
+
 
 	//- script.
 	//- 	function activatePlaceSearch(){

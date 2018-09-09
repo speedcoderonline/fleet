@@ -36,7 +36,26 @@ function updateChat(myChatId){
 
 		var sender = document.createElement('p')
 		sender.classList.add('sender')
-		sender.innerText = userNames[messageInfo.sender]
+		sender.onclick = function(){
+			window.location = '/users/creator-' + messageInfo.sender
+		}
+		if(userNames[messageInfo.sender]){
+			sender.innerText = userNames[messageInfo.sender]
+		}else{
+			firebase.database().ref('users/creators/' + messageInfo.sender + '/firstname').once("value", function(snapshotFirst){
+				sender.innerText = ''
+				sender.innerText += snapshotFirst.val()
+
+				console.log('ye')
+			})
+			firebase.database().ref('users/creators/' + messageInfo.sender + '/lastname').once("value", function(snapshotLast){
+				sender.innerText = ''
+				sender.innerText += snapshotLast.val()
+
+				userNames[messageInfo.sender] = sender.innerText
+			})
+		}
+		
 		content.appendChild(sender)
 
 		var message = document.createElement('p')
@@ -61,7 +80,7 @@ function updateChat(myChatId){
 		messageRef.off("child_added", currentMessagePull)
 		messageRef.orderByChild('date').on("child_added", currentMessagePull)
 	}
-	
+
 }
 
 function sendMessage(){
