@@ -5,7 +5,6 @@ block mainContent
 
 	.flex-main
 
-	
 		.contacts
 			//- .contact
 			//- 	.images
@@ -34,6 +33,7 @@ block mainContent
 	script.
 		var currentMessagePull
 		var currentChat
+		var currentChatName
 		var user 
 		var firstChat = true
 		var userNames = {}
@@ -67,6 +67,8 @@ block mainContent
 							_(itemDiv.id).classList.add('active-chat')
 							updateChat(itemDiv.id)
 						}else{
+							document.cookie = "currentChatName=" + _(itemDiv.id).querySelector('.title').innerText + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
+							alert(getCookie(currentChatName))
 							window.location = '/messagechat/' + itemDiv.id
 						}
 						
@@ -91,6 +93,7 @@ block mainContent
 
 							if(snapshotName.val()){
 								titleH5.innerText = snapshotName.val()
+								currentChatName = snapshotName.val()
 								return
 							}
 						
@@ -113,6 +116,8 @@ block mainContent
 								currentUserName += ' ' + snapshotLastname.val()
 								userNames[memberId] = currentUserName
 								document.cookie = "userNames=" + JSON.stringify(userNames) + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
+
+								currentChatName = titleH5.innerText
 							}).then(function(){
 								if(memberId == user.uid){idx = idx-1}
 							})

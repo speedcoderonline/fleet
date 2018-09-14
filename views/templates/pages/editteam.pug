@@ -3,7 +3,7 @@ block mainContent
 
 	.action-button-wrapper
 		.action-button.delete-button#delete-button(onclick = 'abandonTeam()') Abandon Team
-		.action-button.save-button#save-button(onclick = 'saveEdits()') Save
+		.action-button.save-button#save-button(onclick = 'saveEdits()') Confirm
 		
 	#participant-picker.display-none
 		.close(onclick="_('participant-picker').classList.add('display-none');while (_('participant-picker').querySelector('.wrapper').firstChild) {_('participant-picker').querySelector('.wrapper').removeChild(_('participant-picker').querySelector('.wrapper').firstChild);}") Close
@@ -65,14 +65,6 @@ block mainContent
 		var membersNames = {}
 		var teamName = ''
 
-		if(newTeam){
-			_('save-button').innerText = 'Create'
-			_('save-button').classList.remove('display-none')
-		}else{
-			_('save-button').classList.remove('display-none')
-			_('save-button').innerText = 'Save'
-		}
-
 		function changesMade(){
 			_('save-button').classList.remove('display-none')
 		}
@@ -98,6 +90,7 @@ block mainContent
 					firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
 						createCard(snapshot.val(), '#membersWrapper')
 					})
+					firebase.database().ref('teams/' + teamId + '/members/' + userId).set((new Date()).getTime())
 				}
 				
 
@@ -243,12 +236,9 @@ block mainContent
 				name: _('name').value,
 			}).then(function(){
 				firebase.database().ref('teams/' + teamId + '/skills').set(profileSkills).then(function(){
-					if(!newTeam){
-						popUp('Changes saved.')
-					}else{
-						window.location.replace('/team/' + teamId)
-					}
-					
+					deleteCookie('newTeam')
+					window.location.replace('/team/' + teamId)
+										
 				})
 
 			})
@@ -282,10 +272,19 @@ block mainContent
 
 		function saveProject(){
 			if(noNameSaved){newTeamSave()}
+			if(_('project-link').value){
+				if(_('project-link').value.includes('//')){
+					var projectLink = _('project-link').value
+				}else{
+					var projectLink = '//' + _('project-link').value
+				}
+				
+			}
+			
 			firebase.database().ref('teams/' + teamId + '/projects/' + currentProjectId).set({
 				title: _('project-title').value,
 				description: _('project-description').innerText,
-				link: _('project-link').value
+				link: projectLink
 			}).then(function(){
 				_('project-title').value = ''
 				_('project-description').innerText = ''

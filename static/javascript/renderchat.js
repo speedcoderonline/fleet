@@ -1,3 +1,5 @@
+var lastSentMessage = 0
+
 function updateChat(myChatId){
 	_('chatField').classList.remove('display-none')
 	if(_(myChatId)){
@@ -72,6 +74,7 @@ function updateChat(myChatId){
 	}
 
 	var messageRef = firebase.database().ref('chats/' + myChatId + '/messages')
+	setTimeout(firebase.database().ref('users/creators/' + user.uid + '/chats/' + myChatId).set( (new Date()).getTime() ),500)
 
 	if(firstChat) {
 		messageRef.orderByChild('date').on("child_added", currentMessagePull)
@@ -84,6 +87,9 @@ function updateChat(myChatId){
 }
 
 function sendMessage(){
+	if((lastSentMessage + 200)>(new Date()).getTime()){console.log('hindered');return}
+	lastSentMessage = (new Date()).getTime()
+	
 	var message = document.querySelector('#writtenmessage').innerText
 	var messageId = (new Date()).getTime()
 	firebase.database().ref('chats/' + currentChat + '/messages/' + messageId).set({
@@ -91,8 +97,26 @@ function sendMessage(){
 		message: message,
 		sender: user.uid
 	}).then(function(){
+		
 		firebase.database().ref('chats/' + currentChat + '/latestAction').set((new Date()).getTime())
 		document.querySelector('.message-input').innerText = ''
+		firebase.database().ref('chats/' + currentChat + '/latestAction').once("value", function(snapshotLatestAction){
+			firebase.database().ref('chats/' + currentChat + '/members/').once("value", function(snapshotMembers){
+				Object.values(snapshotMembers.val()).forEach(function(memberActive, idx){
+					if(Object.keys(snapshotMembers.val())[idx] == user.uid){return}
+					firebase.database().ref('chats/' + currentChat + '/latestNotafication/' + Object.keys(snapshotMembers.val())[idx]).once("value", function(snapshotLatestNotif){
+						if(((memberActive + 1000*60*60*24*2)<snapshotLatestAction.val())&&(((snapshotLatestNotif.val()||0) + 1000*60*60*24*2)<snapshotLatestAction.val())){
+							
+							firebase.database().ref('users/creators/' + Object.keys(snapshotMembers.val())[idx] + '/email').once("value", function(snapshotEmail){
+								firebase.database().ref('chats/' + currentChat + '/latestNotafication/' + Object.keys(snapshotMembers.val())[idx]).set((new Date()).getTime())
+								sendEmail(snapshotEmail.val(), 'You have new messages from ' + currentChatName, 'Hi!<br><br>You have new messages from ' + currentChatName + ', check them out and respond!')
+							})
+						}
+					})
+				})
+			})
+		})
+		//Kolla hur länge sedan det var alla såg efter en timeout. Om det var mer än två dagar sedan det var innte, skicka notification
 	})
 }
 

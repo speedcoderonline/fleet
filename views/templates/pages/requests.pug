@@ -81,8 +81,19 @@ block mainContent
 							firebase.database().ref('users/creators/' + creator.uid + '/friends/' + user.uid).set(milliSec)
 							firebase.database().ref('users/creators/' + user.uid + '/friends/' + creator.uid).set(milliSec)
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
+								firebase.database().ref('users/creators/' + user.uid + '/firstname').orderByChild('date').once("value", function(snapshotName){
+
+									var userName = snapshotName.val()
+
+									firebase.database().ref('users/creators/' + user.uid + '/lastname').orderByChild('date').once("value", function(snapshotName2){
+
+										userName += ' ' + snapshotName2.val()										
+
+										sendEmail(creator.email, userName + ' has accepted your friend request!', 'Hi!<br><br>' + userName + ' has accepted you friend request, send them a message and check out their profile.')
+									})
+								})
 								popUp('Friend added, send a message!')
-								event.target.parentElement.parentElement.remove()
+								event.target.parentElement.parentElement.parentElement.remove()
 							})
 
 							var chatId = milliSec + user.uid
@@ -108,7 +119,7 @@ block mainContent
 
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
 								popUp('Friend added, send a message!')
-								event.target.parentElement.parentElement.remove()
+								event.target.parentElement.parentElement.parentElement.remove()
 							})
 						}
 						choisesDiv.appendChild(denyDiv)
@@ -151,6 +162,23 @@ block mainContent
 
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + snapshot2.key).remove().then(function(){
 								popUp('Team joined, send a message!')
+
+								firebase.database().ref('users/creators/' + user.uid + '/firstname').orderByChild('date').once("value", function(snapshotName){
+
+									var userName = snapshotName.val()
+
+									firebase.database().ref('users/creators/' + user.uid + '/lastname').orderByChild('date').once("value", function(snapshotName2){
+
+										userName += ' ' + snapshotName2.val()										
+
+										Object.keys(team.members).forEach(function(memberId){
+
+											firebase.database().ref('users/creators/' + memberId '/email').once("value", function(snapshot3){
+												sendEmail(snapshot3.val(), userName + ' has joined ' + team.name, 'Hi!<br><br>' + userName + 'has joined ' + team.name + '. Say hi to them in the team chat and check out their profile!')
+											})
+										})
+									})
+								})
 								event.target.parentElement.parentElement.parentElement.remove()
 							})
 

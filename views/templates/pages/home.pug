@@ -4,15 +4,23 @@ block pageStatus
 
 block mainContent
 	.loading-screen.blank
+	.top-bar
+		.logo
+		.right-align
+			a(href='/home').item Home
+			a(href='/about').item About
+			a(href='/signin').item.signin Sign in
+
 	header
 		video.video-background(poster='images/thumbnail.png' playbackRate='3.0' autoplay loop muted)
 			source(src='../videos/fleet-blured.mp4' type="video/mp4")
 		.big-logo
 		h2.title Fleet is a platform for <strong>young creators</strong> to meet, collaborate and develop.
-		.signup-wrapper
-			input(type='email' placeholder='Email')#email-list-input
-			.submit-btn(onclick='addToEmailList("#email-list-input")') Subscribe
-		.status Coming soon
+		a(href='/signup').join Become a creator
+		//- .signup-wrapper
+		//- 	input(type='email' placeholder='Email')#email-list-input
+		//- 	.submit-btn(onclick='addToEmailList("#email-list-input")') Subscribe
+		//.status Coming soon
 		a(href='https://www.youtube.com/watch?v=XrLtvg7xK0w' target='_blank').video-link
 			img(src='../images/youtube-logo.png')
 			div Watch our promo here

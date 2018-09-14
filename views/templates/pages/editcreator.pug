@@ -97,7 +97,7 @@ block mainContent
 
 				document.getElementById('first-name').value = userData.firstname
 				document.getElementById('last-name').value = userData.lastname
-				document.getElementById('user-description').value = userData.description || ''
+				document.getElementById('user-description').innerText = userData.description || ''
 				document.getElementById('user-location').querySelector('.country').value = userData.country
 				document.getElementById('user-location').querySelector('.city').value = userData.city
 
@@ -223,7 +223,9 @@ block mainContent
 				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(profileSkills).then(function(){
 					if(!newUser){
 						popUp('Changes saved.')
+						_('save-button').classList.add('display-none')
 					}else{
+						deleteCookie('newUser')
 						window.location.replace('/explore')
 					}
 					
@@ -259,10 +261,17 @@ block mainContent
 		}
 
 		function saveProject(){
+			if(_('project-link').value){
+				if(_('project-link').value.includes('//')){
+					var projectLink = _('project-link').value
+				}else{
+					var projectLink = '//' + _('project-link').value
+				}
+			}
 			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + currentProjectId).set({
 				title: _('project-title').value,
 				description: _('project-description').innerText,
-				link: _('project-link').value
+				link: projectLink
 			}).then(function(){
 				_('project-title').value = ''
 				_('project-description').innerText = ''
