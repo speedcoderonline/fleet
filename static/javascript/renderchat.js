@@ -1,6 +1,9 @@
 var lastSentMessage = 0
+var loadedMessages = {}
 
 function updateChat(myChatId){
+	loadedMessages = {}
+	
 	_('chatField').classList.remove('display-none')
 	if(_(myChatId)){
 		_(myChatId).classList.remove('notafication')
@@ -17,6 +20,8 @@ function updateChat(myChatId){
 	var updateLastRead
 
 	currentMessagePull = function(snapshot){
+		if(loadedMessages[snapshot.key]){console.log('gotcha!');return}
+		loadedMessages[snapshot.key] = true
 		clearTimeout(updateLastRead)
 		updateLastRead = setTimeout(function(){
 			firebase.database().ref('users/creators/' + user.uid + '/chats/' + myChatId).set( (new Date()).getTime() );console.log('updated')

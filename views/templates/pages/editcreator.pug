@@ -1,7 +1,8 @@
 extends ../index
 block mainContent
+	.loading-screen
 
-	.save-button.display-none#save-button(onclick = 'saveEdits()') Save
+	.save-button#save-button(onclick = 'saveEdits()') Continue
 
 	.profile-wrapper
 
@@ -11,16 +12,16 @@ block mainContent
 				.image
 				section.name
 					h4.title Name
-					input.text-input.first-name#first-name(placeholder='First name' onkeydown='changesMade()')
-					input.text-input.last-name#last-name(placeholder='Last name' onkeydown='changesMade()')
+					input.text-input.first-name#first-name(placeholder='First name')
+					input.text-input.last-name#last-name(placeholder='Last name')
 				section.description
 					h4.title Description
-					.long-input#user-description(contenteditable='true' placeholder='User description' onkeydown='changesMade()')
+					.long-input#user-description(contenteditable='true' placeholder='User description')
 
 				section.location#user-location
 					h4.title Location
-					input.text-input.country(placeholder='Country' onkeydown='changesMade()')
-					input.text-input.city(placeholder='City' onkeydown='changesMade()')
+					input.text-input.country(placeholder='Country')
+					input.text-input.city(placeholder='City')
 				//input#location-search(placeholder = 'Your city')
 				
 			section.skills#profile-skills
@@ -60,16 +61,6 @@ block mainContent
 		var currentProjectId = (new Date).getTime()
 		var newUser = getCookie('newUser')
 		var profileId
-
-		if(newUser){
-			_('save-button').innerText = 'Continue'
-			_('save-button').classList.remove('display-none')
-
-		}
-
-		function changesMade(){
-			_('save-button').classList.remove('display-none')
-		}
 
 		//action-button -> edit or add friend
 		firebase.auth().onAuthStateChanged(function(user) {
@@ -141,6 +132,8 @@ block mainContent
 				//- }catch(e){
 
 				//- }
+
+				document.querySelector('.loading-screen').classList.add('display-none')
 
 			})
 		})
@@ -221,16 +214,9 @@ block mainContent
 				description: _('user-description').innerText,
 			}).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(profileSkills).then(function(){
-					if(!newUser){
-						popUp('Changes saved.')
-						_('save-button').classList.add('display-none')
-					}else{
-						deleteCookie('newUser')
-						window.location.replace('/explore')
-					}
-					
+					deleteCookie('newUser')
+					window.location.replace('/explore')
 				})
-
 			})
 
 			if(startCity != _('user-location').querySelector('.city').value || startCountry !== _('user-location').querySelector('.country').value){

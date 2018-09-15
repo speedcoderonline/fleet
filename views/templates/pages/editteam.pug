@@ -1,6 +1,8 @@
 extends ../index
 block mainContent
 
+	.loading-screen
+
 	.action-button-wrapper
 		.action-button.delete-button#delete-button(onclick = 'abandonTeam()') Abandon Team
 		.action-button.save-button#save-button(onclick = 'saveEdits()') Confirm
@@ -75,6 +77,9 @@ block mainContent
 		firebase.auth().onAuthStateChanged(function(user) {
 			userId = user.uid
 			firebase.database().ref('teams/' + teamId).once("value", function(snapshot){
+				document.querySelector('.loading-screen').classList.add('display-none')
+
+					
 				var teamData = snapshot.val() || {}
 				profileSkills = teamData.skills || {}
 				if(teamData.members){
@@ -284,7 +289,7 @@ block mainContent
 			firebase.database().ref('teams/' + teamId + '/projects/' + currentProjectId).set({
 				title: _('project-title').value,
 				description: _('project-description').innerText,
-				link: projectLink
+				link: projectLink || null
 			}).then(function(){
 				_('project-title').value = ''
 				_('project-description').innerText = ''
@@ -329,6 +334,11 @@ block mainContent
 								uid: teamId,
 								date: (new Date()).getTime()
 							}).then(function(){
+
+								firebase.database().ref('users/creators/' + friendId.key + '/email').once("value", function(snapshotEmail){
+									sendEmail(snapshotEmail.val(), 'Invitation to the team "' + teamName + '"', 'Hi!<br><br>You have received an invitation to the team ' + teamName + '. Check out their profile and accept/deny the request on your "requests" page.')
+								})
+
 								popUp('Request sent')
 							})
 
@@ -370,6 +380,7 @@ block mainContent
 			firebase.database().ref('users/creators/' + userId + '/chats/' + teamId).remove()
 			firebase.database().ref('users/creators/' + userId + '/teams/' + teamId).remove()
 			firebase.database().ref('teams/' + teamId + '/members').once("value", function(snapshot){
+				if(!snapshot.val()){window.location = '/friends';return}
 				if(snapshot.numChildren()<=1 && snapshot.val()[userId]){
 					firebase.database().ref('teams/' + teamId).remove()
 					firebase.database().ref('chats/' + teamId).remove()

@@ -3,6 +3,7 @@ block mainContent
 
 	include ../elements/connections-menu.pug
 
+	.loading-screen
 	
 	section#teams
 		h5.title Teams
@@ -75,6 +76,7 @@ block mainContent
 					textWrapperDiv.appendChild(descriptionDiv)
 				})
 			})
+			document.querySelector('.loading-screen').classList.add('display-none')
 		})
 
 		firebase.database().ref('users/creators/' + userId + '/teams').orderByChild('date').once("value", function(snapshot){

@@ -44,11 +44,13 @@ block mainContent
 
 
 	script.
+		var requestsCompleted = {}
 		firebase.auth().onAuthStateChanged(function(user){
 
 		firebase.database().ref('users/creators/' + user.uid + '/requests').orderByChild('date').once("value", function(snapshot){
 
 			snapshot.forEach(function(request){
+				requestsCompleted[request.val().uid] = false
 				if(request.val().type == 'creator'){
 					firebase.database().ref('users/creators/' + request.val().uid).once("value", function(snapshot2){
 						var creator = snapshot2.val()
@@ -75,6 +77,8 @@ block mainContent
 						acceptDiv.classList.add('accept')
 						acceptDiv.classList.add('choise')
 						acceptDiv.onclick = function(event){
+							if(requestsCompleted[request.val().uid] == true){return}
+							requestsCompleted[request.val().uid] = true
 
 							var milliSec = (new Date()).getTime()
 
@@ -116,6 +120,8 @@ block mainContent
 						denyDiv.classList.add('deny')
 						denyDiv.classList.add('choise')
 						denyDiv.onclick = function(event){
+							if(requestsCompleted[request.val().uid] == true){return}
+							requestsCompleted[request.val().uid] = true
 
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
 								popUp('Friend rejected')
@@ -127,6 +133,7 @@ block mainContent
 				}else if(request.val().type == 'team'){
 
 					firebase.database().ref('teams/' + request.val().uid).once("value", function(snapshot2){
+
 						var team = snapshot2.val()
 						var teamId = request.val().uid
 
@@ -154,6 +161,9 @@ block mainContent
 						acceptDiv.classList.add('accept')
 						acceptDiv.classList.add('choise')
 						acceptDiv.onclick = function(event){
+
+							if(requestsCompleted[request.val().uid] == true){return}
+							requestsCompleted[request.val().uid] = true
 
 							var milliSec = (new Date()).getTime()
 
@@ -191,12 +201,14 @@ block mainContent
 						denyDiv.classList.add('deny')
 						denyDiv.classList.add('choise')
 						denyDiv.onclick = function(event){
+							if(requestsCompleted[request.val().uid] == true){return}
+							requestsCompleted[request.val().uid] = true
 
-							firebase.database().ref('users/teams/' + user.uid + '/requests/' + snapshot2.key).remove().then(function(){
+							firebase.database().ref('users/creators/' + user.uid + '/requests/' + request.val().uid).remove().then(function(){
 								popUp('Team denied')
 								event.target.parentElement.parentElement.parentElement.remove()
 							})
-						}
+						}				
 						choisesDiv.appendChild(denyDiv)
 					})
 				}

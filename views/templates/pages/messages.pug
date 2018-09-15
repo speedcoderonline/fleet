@@ -3,6 +3,8 @@ block mainContent
 
 	include ../elements/connections-menu.pug
 
+	.loading-screen
+
 	.flex-main
 
 		.contacts
@@ -43,15 +45,15 @@ block mainContent
 		user = currUser
 		
 
-		firebase.database().ref('users/creators/' + user.uid + '/chats').once("value", function(snapshot){
-
-			console.log(snapshot.val())
+		firebase.database().ref('users/creators/' + user.uid + '/chats').orderByValue().once("value", function(snapshot){
 
 			var myChats = []
 
 			snapshot.forEach(function(chat){
 				myChats.push(chat.key)
 			})
+
+			myChats.reverse()
 
 			myChats.forEach(function(myChatId, idx){
 				firebase.database().ref('chats/' + myChatId + '/members').once("value", function(snapshotMembers){
@@ -68,7 +70,6 @@ block mainContent
 							updateChat(itemDiv.id)
 						}else{
 							document.cookie = "currentChatName=" + _(itemDiv.id).querySelector('.title').innerText + "; expires=Thu, 18 Dec 2029 12:00:00 UTC";
-							alert(getCookie(currentChatName))
 							window.location = '/messagechat/' + itemDiv.id
 						}
 						
@@ -127,6 +128,7 @@ block mainContent
 					itemDiv.appendChild(titleH5)
 
 					if(idx == 0 && window.innerWidth>600){_(itemDiv.id).classList.add('active-chat');updateChat(myChatId)}
+					document.querySelector('.loading-screen').classList.add('display-none')
 				})
 			})
 

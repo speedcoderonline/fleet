@@ -1,6 +1,8 @@
 extends ../index
 block mainContent
 
+	.loading-screen
+
 	.profile-wrapper
 		header
 			.action-button.display-none#profile-action-button
@@ -111,6 +113,7 @@ block mainContent
 					renderProjects(project.title, project.description, project.link)
 				})
 			}
+			document.querySelector('.loading-screen').classList.add('display-none')
 		})
 		
 		if (user) {

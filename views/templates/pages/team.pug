@@ -1,6 +1,8 @@
 extends ../index
 block mainContent
 
+	.loading-screen
+
 	.profile-wrapper
 		header
 			.action-button.display-none#profile-action-button
@@ -128,6 +130,9 @@ block mainContent
 					descriptionDiv.classList.add('description')
 					descriptionDiv.innerText = creator.description || ''
 					textWrapperDiv.appendChild(descriptionDiv)
+
+
+					document.querySelector('.loading-screen').classList.add('display-none')
 				})
 			})
 		})

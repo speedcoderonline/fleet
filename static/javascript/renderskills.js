@@ -100,7 +100,9 @@ function renderAllSkills(profileSkills, profileType, profileId){
 
 			firebase.database().ref(firebasePath).set(el.target.checked).then(function(){
 				reRenderAllSkills()
-				if(noNameSaved){newTeamSave()}
+				if(profileType == 'team'){
+					if(noNameSaved){newTeamSave()}
+				}
 			})
 			
 		}	

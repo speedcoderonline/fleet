@@ -100,7 +100,7 @@ function timeString(date) {
 	if((new Date()).getTime() > (date + 1000*60*60*24)){
 		return((new Date(date)).getDate() + ' of ' + monthNames[(new Date(date)).getMonth()])
 	}else{
-		return((new Date(date)).getHours() + ':' + (new Date(date)).getMinutes())
+		return(('0' + (new Date(date)).getHours()).slice(-2) + ':' + ('0' + (new Date(date)).getMinutes()).slice(-2))
 	}
 }
 
