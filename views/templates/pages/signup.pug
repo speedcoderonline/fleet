@@ -41,14 +41,25 @@ block mainContent
 					break
 			}
 			firebase.auth().createUserWithEmailAndPassword(signupform.email.value, signupform.password.value).then(function(){
+				firstName = signupform.firstname.value
+				lastName = signupform.lastname.value
+				fullName = firstName + ' ' + lastName
+				dividedFullName = firstName + ' ' + lastName
+				var dbName = dividedFullName.toLowerCase().replace(/ /g, '-')
 				firebase.database().ref('users/creators/' + currentUser().uid).set({
-					firstname: signupform.firstname.value,
-					lastname: signupform.lastname.value,
+					firstname: firstName,
+					lastname: lastName,
+					fullname: fullName,
 					email: signupform.email.value,
-					uid: currentUser().uid,
+					uid: currentUser().uid
 				}).then(function(){
 					document.cookie = "newUser=true; expires=Thu, 18 Dec 2029 12:00:00 UTC";
 					window.location.replace('/editcreator')
+				})
+				dbRef('userList/creators/' + dbName).set({
+					uid: currentUser().uid,
+					fullname: fullName,
+
 				})
 			}).catch(function(error){
 				const errorCode = error.code

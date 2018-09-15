@@ -3,20 +3,28 @@ extends ../index
 block mainContent
 	section.upper-section
 		.search-field#tags
-			input(placeholder='Search by skills')
+			input#tagsInput(placeholder='Search by skills')
 		.search-field#people
-			input(placeholder='Search by name')
+			input#peopleInput(placeholder='Search by name')
 		.search-field#groups
-			input(placeholder='Search groups')
+			input#groupsInput(placeholder='Search groups')
 	section.lower-section
 		h3 Explore
 		#search-results
 
 	script.
-		onLoad(
-			dbPull('users/creators/', function(snapshot){
-				snapshot.forEach(function(user){
-					createCard(user.val(), '#search-results')
+		onLoad(function(){
+			peopleInput = document.querySelector('#peopleInput')
+
+			peopleInput.addEventListener('keypress', function(){
+				_('search-results').innerHTML = ''
+				var searchString = peopleInput.value
+				console.log(searchString)
+				dbRef('userList/creators/').orderByChild('fullname').startAt(searchString).once('value', function(snapshot){
+					snapshot.forEach(function(user){
+						console.log(user.val())
+						createCard(user.val(), '#search-results')
+					})
 				})
 			})
-		)
+		})

@@ -44,7 +44,7 @@ function currentUser(){
 	return user
 }
 
-function db(path){
+function dbRef(path){
 	return firebase.database().ref(path)
 }
 
@@ -91,7 +91,7 @@ function createCard(user, element){
 }
 
 function onLoad(func){
-	func
+	window.addEventListener('load', func)
 }
 
 function timeString(date) {
