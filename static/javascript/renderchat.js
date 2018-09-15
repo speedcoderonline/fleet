@@ -74,7 +74,7 @@ function updateChat(myChatId){
 	}
 
 	var messageRef = firebase.database().ref('chats/' + myChatId + '/messages')
-	setTimeout(firebase.database().ref('users/creators/' + user.uid + '/chats/' + myChatId).set( (new Date()).getTime() ),500)
+	setTimeout(function(){firebase.database().ref('users/creators/' + user.uid + '/chats/' + myChatId).set( (new Date()).getTime() )},500)
 
 	if(firstChat) {
 		messageRef.orderByChild('date').on("child_added", currentMessagePull)
@@ -89,7 +89,7 @@ function updateChat(myChatId){
 function sendMessage(){
 	if((lastSentMessage + 200)>(new Date()).getTime()){console.log('hindered');return}
 	lastSentMessage = (new Date()).getTime()
-	
+
 	var message = document.querySelector('#writtenmessage').innerText
 	var messageId = (new Date()).getTime()
 	firebase.database().ref('chats/' + currentChat + '/messages/' + messageId).set({

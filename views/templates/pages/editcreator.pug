@@ -271,7 +271,7 @@ block mainContent
 			firebase.database().ref('users/creators/' + currentUser().uid + '/projects/' + currentProjectId).set({
 				title: _('project-title').value,
 				description: _('project-description').innerText,
-				link: projectLink
+				link: projectLink || null
 			}).then(function(){
 				_('project-title').value = ''
 				_('project-description').innerText = ''

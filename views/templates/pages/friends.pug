@@ -104,8 +104,9 @@ block mainContent
 					textWrapperDiv.appendChild(descriptionDiv)
 					Object.keys(team.members).forEach(function(memberId, idx){
 						firebase.database().ref('users/creators/' + memberId + '/firstname').once("value", function(snapshot2){
-							if(idx != 0){descriptionDiv.innerText += ', '}
-							descriptionDiv.innerText += snapshot2.val()
+							if(idx != 0){descriptionDiv.innerText += ', ' + snapshot2.val()}else{
+								descriptionDiv.innerText += snapshot2.val()
+							}
 						})
 					})
 					

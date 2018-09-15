@@ -60,7 +60,7 @@ block mainContent
 				if(snapshot.val().friends[user.uid]){
 					document.getElementById('profile-action-button').innerText = 'Message'
 					document.getElementById('profile-action-button').onclick = function(){
-						window.location = '/messages'
+						window.location = '/messages#' + userId
 					}
 				}
 			}

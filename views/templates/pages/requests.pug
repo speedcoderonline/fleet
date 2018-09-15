@@ -118,7 +118,7 @@ block mainContent
 						denyDiv.onclick = function(event){
 
 							firebase.database().ref('users/creators/' + user.uid + '/requests/' + creator.uid).remove().then(function(){
-								popUp('Friend added, send a message!')
+								popUp('Friend rejected')
 								event.target.parentElement.parentElement.parentElement.remove()
 							})
 						}
@@ -173,7 +173,7 @@ block mainContent
 
 										Object.keys(team.members).forEach(function(memberId){
 
-											firebase.database().ref('users/creators/' + memberId '/email').once("value", function(snapshot3){
+											firebase.database().ref('users/creators/' + memberId + '/email').once("value", function(snapshot3){
 												sendEmail(snapshot3.val(), userName + ' has joined ' + team.name, 'Hi!<br><br>' + userName + 'has joined ' + team.name + '. Say hi to them in the team chat and check out their profile!')
 											})
 										})

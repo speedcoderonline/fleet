@@ -90,7 +90,6 @@ block mainContent
 					firebase.database().ref('users/creators/' + userId).once("value", function(snapshot){
 						createCard(snapshot.val(), '#membersWrapper')
 					})
-					firebase.database().ref('teams/' + teamId + '/members/' + userId).set((new Date()).getTime())
 				}
 				
 
@@ -227,6 +226,7 @@ block mainContent
 		}
 
 		function saveEdits(){
+			if(noNameSaved){newTeamSave()}
 			noNameSaved = false
 			if(!_('name').value){
 				popUp("You have to input the Team's name")
@@ -351,6 +351,7 @@ block mainContent
 
 		function newTeamSave(){
 			firebase.database().ref('teams/' + teamId).update({name: _('name').value,})
+			firebase.database().ref('teams/' + teamId + '/members/' + userId).set((new Date()).getTime())
 			firebase.database().ref('users/creators/' + userId + '/teams/' + teamId).set((new Date()).getTime())
 			firebase.database().ref('users/creators/' + userId + '/chats/' + teamId).set((new Date()).getTime())
 			deleteCookie("newTeam")
