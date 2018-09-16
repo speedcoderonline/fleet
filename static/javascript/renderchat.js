@@ -2,6 +2,7 @@ var lastSentMessage = 0
 var loadedMessages = {}
 
 function updateChat(myChatId){
+	var firstPull = true
 	loadedMessages = {}
 	
 	_('chatField').classList.remove('display-none')
@@ -32,10 +33,22 @@ function updateChat(myChatId){
 
 		var wrapper = document.createElement('div')
 		wrapper.classList.add('message')
+		wrapper.id = snapshot.key
 		if(messageInfo.sender == user.uid){
 			wrapper.classList.add('mine')
 		}
-		document.querySelector('#messagesField').appendChild(wrapper)
+
+		var laterMessage = 0
+
+		Object.keys(loadedMessages).forEach(function(messageTime){
+			if(messageTime > snapshot.key && (messageTime < laterMessage || laterMessage == 0)){laterMessage = messageTime}
+		})
+
+		if(laterMessage){
+			document.querySelector('#messagesField').insertBefore(wrapper, _(laterMessage))
+		}else{
+			document.querySelector('#messagesField').appendChild(wrapper)
+		}
 
 		var content = document.createElement('div')
 		content.classList.add('content')
@@ -75,18 +88,32 @@ function updateChat(myChatId){
 		date.innerText = timeString(messageInfo.date)
 		content.appendChild(date)
 
-		updateScroll()
+		if(firstPull){updateScroll()}
 	}
 
 	var messageRef = firebase.database().ref('chats/' + myChatId + '/messages')
 	setTimeout(function(){firebase.database().ref('users/creators/' + user.uid + '/chats/' + myChatId).set( (new Date()).getTime() )},500)
 
+	var loadBtn = document.createElement('div')
+	loadBtn.classList.add('load-btn')
+	loadBtn.innerText = 'Load more'
+	loadBtn.onclick = function(){
+		firstPull = false
+		var endAtKey = Math.min(...Object.keys(loadedMessages)).toString()
+		messageRef.orderByChild('date').limitToLast(Object.keys(loadedMessages).length + 3).endAt(endAtKey).once("value", function(snapshot){
+			snapshot.forEach(function(message){
+				currentMessagePull(message)
+			})
+		})
+	}
+	document.querySelector('#messagesField').appendChild(loadBtn)
+
 	if(firstChat) {
-		messageRef.orderByChild('date').on("child_added", currentMessagePull)
+		messageRef.orderByChild('date').limitToLast(3).on("child_added", currentMessagePull)
 		firstChat = false
 	}else{
 		messageRef.off("child_added", currentMessagePull)
-		messageRef.orderByChild('date').on("child_added", currentMessagePull)
+		messageRef.orderByChild('date').limitToLast(3).on("child_added", currentMessagePull)
 	}
 
 }
