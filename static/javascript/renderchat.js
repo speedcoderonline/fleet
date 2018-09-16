@@ -109,6 +109,7 @@ function updateChat(myChatId){
 
 	var loadBtn = document.createElement('div')
 	loadBtn.classList.add('load-btn')
+	loadBtn.classList.add('display-none')
 	loadBtn.innerText = 'Load more'
 	loadBtn.onclick = function(){
 		firstPull = false
