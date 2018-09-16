@@ -1,5 +1,6 @@
 var lastSentMessage = 0
 var loadedMessages = {}
+var pullNum = 0
 
 function updateChat(myChatId){
 	var firstPull = true
@@ -21,7 +22,7 @@ function updateChat(myChatId){
 	var updateLastRead
 
 	currentMessagePull = function(snapshot){
-		if(loadedMessages[snapshot.key]){console.log('gotcha!');return}
+		if(loadedMessages[snapshot.key]){console.log('gotcha!');return}else{pullNum++}
 		loadedMessages[snapshot.key] = true
 		clearTimeout(updateLastRead)
 		updateLastRead = setTimeout(function(){
@@ -88,6 +89,18 @@ function updateChat(myChatId){
 		date.innerText = timeString(messageInfo.date)
 		content.appendChild(date)
 
+		if(firstPull){
+
+			if(Object.keys(loadedMessages).length < 15){
+				document.querySelector('.load-btn').classList.add('display-none')
+			}else{
+				document.querySelector('.load-btn').classList.remove('display-none')
+			}
+
+		}
+
+		
+
 		if(firstPull){updateScroll()}
 	}
 
@@ -100,20 +113,29 @@ function updateChat(myChatId){
 	loadBtn.onclick = function(){
 		firstPull = false
 		var endAtKey = Math.min(...Object.keys(loadedMessages)).toString()
-		messageRef.orderByChild('date').limitToLast(Object.keys(loadedMessages).length + 3).endAt(endAtKey).once("value", function(snapshot){
+		messageRef.orderByChild('date').limitToLast(Object.keys(loadedMessages).length + 15).endAt(endAtKey).once("value", function(snapshot){
+			//if(snapshot.numChildren() < 15){document.querySelector('.load-btn').classList.add('display-none')}
+			pullNum = 0
 			snapshot.forEach(function(message){
 				currentMessagePull(message)
+
+				//pullNum++
+				if(pullNum < 15){
+					document.querySelector('.load-btn').classList.add('display-none')
+				}else{
+					document.querySelector('.load-btn').classList.remove('display-none')
+				}
 			})
 		})
 	}
 	document.querySelector('#messagesField').appendChild(loadBtn)
 
 	if(firstChat) {
-		messageRef.orderByChild('date').limitToLast(3).on("child_added", currentMessagePull)
+		messageRef.orderByChild('date').limitToLast(15).on("child_added", currentMessagePull)
 		firstChat = false
 	}else{
 		messageRef.off("child_added", currentMessagePull)
-		messageRef.orderByChild('date').limitToLast(3).on("child_added", currentMessagePull)
+		messageRef.orderByChild('date').limitToLast(15).on("child_added", currentMessagePull)
 	}
 
 }

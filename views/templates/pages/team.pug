@@ -113,7 +113,7 @@ block mainContent
 					var creator = snapshot2.val()
 
 					var itemDiv = document.createElement('a')
-					itemDiv.href = '/user/creator-' + member.uid
+					itemDiv.href = '/user/creator-' + creator.uid
 					itemDiv.classList.add('item')
 					document.querySelector('#members').appendChild(itemDiv)
 
