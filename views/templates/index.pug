@@ -31,29 +31,52 @@ html
 
 		if !signedOutPage
 			header.signed-in
-				.small-logo
+				a.small-logo(href='/explore')
 				h1 <span>fleet</span>ofcreators
-				#menu(onclick='toggleMenu()')
-					.menu-row
-					.menu-row
-					.menu-row
+				#menu.menu-hidden
+					#menu-icon(onclick='toggleMenu()')
+						.menu-row
+						.menu-row
+						.menu-row
+
+					.overlay(onclick='toggleMenu()')
+					.menu
+						a.menu-item(href='/explore') Explore
+						a.menu-item(href='/friends') Connections
+						a.menu-item(href='/messages') Messages
+						a#profile.menu-item My Profile
+						#sign-out.menu-item Sign Out
+
 			.main-content
 				block mainContent
 		else
+			.top-bar
+				a.small-logo(href='/')
+				.right-align
+					a(href='/').item Home
+					//- a(href='/about').item About
+					a(href='/signin').item Sign in
+					a(href='/signup').item.btn Sign up
 			.main-content
 				block mainContent
 
 		script.
 			var menuShown
+			firebase.auth().onAuthStateChanged(function(user){
+				if(user){
+					_('profile').href = '/user/creator-' + user.uid
+				}else{
+					_('profile').addEventListener('click', () => { console.log('You don\'t seem to be signed in') })
+				}
+			})
+			_('sign-out').addEventListener('click', () => {firebase.auth().signOut(); window.location.replace('/')})
 			function toggleMenu(){
-				console.log(menuShown)
 				if(!menuShown){
 					_('menu').classList.add('menu-shown')
-				console.log(menuShown)
+					_('menu').classList.remove('menu-hidden')
 				}else if(menuShown){
 					_('menu').classList.remove('menu-shown')
-				console.log(menuShown)
+					_('menu').classList.add('menu-hidden')
 				}
 				menuShown = !menuShown
-				console.log(menuShown)
 			}

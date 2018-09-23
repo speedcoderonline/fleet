@@ -17,13 +17,15 @@ block mainContent
 			peopleInput = document.querySelector('#peopleInput')
 
 			peopleInput.addEventListener('keypress', function(){
-				_('search-results').innerHTML = ''
-				var searchString = peopleInput.value
+				var searchString = peopleInput.value.toLowerCase().replace(/ /g, '-')
 				console.log(searchString)
-				dbRef('userList/creators/').orderByChild('fullname').startAt(searchString).once('value', function(snapshot){
-					snapshot.forEach(function(user){
-						console.log(user.val())
-						createCard(user.val(), '#search-results')
+				dbRef('userList/creators/').orderByChild('fullname').startAt(searchString).endAt(searchString + "\uf8ff").once('value', function(snapshot){
+					_('search-results').innerHTML = ''
+					snapshot.forEach(function(listUser){
+						console.log(listUser.key)
+						dbPull('users/creators/' + listUser.val().uid + '/', function(user){
+							createCard(user.val(), '#search-results')
+						})
 					})
 				})
 			})

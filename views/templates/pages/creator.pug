@@ -51,10 +51,12 @@ block mainContent
 			if(userData.skills){
 				firebase.database().ref('skills/').once("value", function(snapshot){
 					Object.values(userData.skills).forEach(function(mainSkill, idx){
-						renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'], true)
-						Object.keys(mainSkill).forEach(function(subSkill, idx2){
-							renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
-						})
+						if(mainSkill){
+							renderSkill(snapshot.val()[Object.keys(userData.skills)[idx]]['name'], true)
+							Object.keys(mainSkill).forEach(function(subSkill, idx2){
+								renderSkill(Object.values(snapshot.val()[Object.keys(userData.skills)[idx]]['subSkills'])[idx2]['name'])
+							})
+						}
 					})
 				})
 			}

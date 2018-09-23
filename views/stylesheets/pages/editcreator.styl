@@ -117,8 +117,7 @@
 						left 50%
 						transform translateX(-50%)
 					
-					.skill
-					
+					.skill					
 						h4.title
 							text-align left
 							font-size 12px
@@ -127,6 +126,13 @@
 					
 					&.skills
 						@import "elements/skill"
+						.skill
+							cursor pointer
+							transition ease-in-out .1s
+							&:hover
+								transform scale(1.03)
+						.main-skill
+							clear both
 								
 					
 						// .my-wrapper

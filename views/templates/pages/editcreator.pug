@@ -2,7 +2,7 @@ extends ../index
 block mainContent
 	.loading-screen
 
-	.save-button#save-button(onclick = 'saveEdits()') Continue
+	.save-button#save-button(onclick = 'saveEdits()') Save
 
 	.profile-wrapper
 
@@ -215,7 +215,7 @@ block mainContent
 			}).then(function(){
 				firebase.database().ref('users/creators/' + currentUser().uid + '/skills').set(profileSkills).then(function(){
 					deleteCookie('newUser')
-					window.location.replace('/explore')
+					window.location.replace('/user/creator-' + currentUser().uid)
 				})
 			})
 
