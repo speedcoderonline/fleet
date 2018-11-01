@@ -23,6 +23,7 @@ block mainContent
 		var user 
 		var userNames = JSON.parse(getCookie('userNames'))
 		var firstChatId
+		var currentChatName = getCookie('currentChatName')
 
 		firebase.auth().onAuthStateChanged(function(currUser){
 			user = currUser
