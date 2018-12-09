@@ -55,7 +55,7 @@ block mainContent
 					fullname: fullName,
 					email: signupform.email.value,
 					uid: currentUser().uid,
-					photoURL: null
+					photoURL: 'null'
 				}).then(function(){
 					document.cookie = "newUser=true; expires=Thu, 18 Dec 2029 12:00:00 UTC";
 					window.location.replace('/editcreator')
