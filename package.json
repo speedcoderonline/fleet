@@ -4,7 +4,7 @@
   "description": "Fleet beta",
   "main": "server.js",
   "engines": {
-    "node": "*"
+    "node": "8.6.0"
   },
   "scripts": {
     "build-css": "stylus -u nib views/stylesheets/ -o static/css",
