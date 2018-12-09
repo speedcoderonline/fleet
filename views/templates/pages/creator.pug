@@ -7,7 +7,7 @@ block mainContent
 		header
 			.action-button.display-none#profile-action-button
 			h2.name#user-name
-			.image
+			#profile-image
 		.profile-info
 			p.description#user-description
 			.location
@@ -34,6 +34,9 @@ block mainContent
 			userEmail = userData.email
 			console.log(userData)
 
+			storageRef('users/creators/' + userId + '/' + snapshot.val().photoURL).getDownloadURL().then(function(url){
+				_('profile-image').style.backgroundImage = 'url(' + url + ')'
+			})
 			document.getElementById('user-name').innerText = userData.firstname + ' ' + userData.lastname
 			document.getElementById('user-description').innerText = userData.description
 			document.getElementById('user-location').innerText = userData.city + ', ' + userData.country

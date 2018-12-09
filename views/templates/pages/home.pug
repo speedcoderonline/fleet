@@ -91,7 +91,7 @@ block mainContent
 
 
 	script.
-		popUp('This demo is temporarily up for showcase. All accounts created during this period will be deleted. If you are interested in this platform you can email us at info@fleetofcreators.com.')
+		//- popUp('This demo is temporarily up for showcase. All accounts created during this period will be deleted. If you are interested in this platform you can email us at info@fleetofcreators.com.')
 		firebase.auth().onAuthStateChanged(function(currUser){
 			if(currUser){
 				window.location = '/explore'

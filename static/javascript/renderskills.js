@@ -104,6 +104,32 @@ function renderAllSkills(profileSkills, profileType, profileId){
 					if(noNameSaved){newTeamSave()}
 				}
 			})
+
+			// Add user to separate skill list
+
+			dbPull('users/creators/' + profileId, (snapshot) => {
+				var currentTopSkill
+				if(el.target.dataset.isMainSkill == 'true'){
+					currentTopSkill = el.target.dataset.skillId
+				}else{
+					currentTopSkill = el.target.dataset.mainSkillId
+				}
+				
+				var dbName = snapshot.val().fullname.toLowerCase().replace(/ /g, '-')
+				if(el.target.checked){
+						dbRef('userList/skills/' + currentTopSkill + '/' + dbName).set({
+							uid: profileId,
+							fullname: snapshot.val().fullname
+						})
+					
+				}else if(!el.target.checked){
+					profileSkillId = snapshot.child('skills/' + currentTopSkill).val()
+					if(el.target.dataset.isMainSkill == 'true'){
+						dbRef('userList/skills/' + currentTopSkill + '/' + dbName).remove()
+					}
+					
+				}
+			})
 			
 		}	
 
