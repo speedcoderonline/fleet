@@ -3,17 +3,11 @@ extends ../index
 block mainContent
 	section.upper-section
 		.search-field#tags
-			select#tagsInput(onchange='searchSkill()')
-				option(value='default') Search by skill
-				option Film
-				option Programming
-				option(value='photo') Photography
-				option Design
-				option Music
-
+			input#tagsInput(placeholder='Search by skills')
 		.search-field#people
 			input#peopleInput(placeholder='Search by name')
-			button.search-btn(onclick='searchCreators()') Search
+		.search-field#groups
+			input#groupsInput(placeholder='Search groups')
 	section.lower-section
 		h3 Explore
 		#search-results
@@ -21,45 +15,18 @@ block mainContent
 	script.
 		onLoad(function(){
 			peopleInput = document.querySelector('#peopleInput')
-		})
 
-		function searchCreators(){
-			var searchString = peopleInput.value
-			searchString = searchString.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
-			console.log(searchString)
-			_('search-results').innerHTML = ''
-			if(searchString){
+			peopleInput.addEventListener('keypress', function(){
+				var searchString = peopleInput.value.toLowerCase().replace(/ /g, '-')
+				console.log(searchString)
 				dbRef('userList/creators/').orderByChild('fullname').startAt(searchString).endAt(searchString + "\uf8ff").once('value', function(snapshot){
-					if(snapshot){
-						snapshot.forEach(function(listUser){
-							console.log(listUser.key)
-							dbPull('users/creators/' + listUser.val().uid + '/', function(user){
-								createCard(user.val(), '#search-results')
-							})
+					_('search-results').innerHTML = ''
+					snapshot.forEach(function(listUser){
+						console.log(listUser.key)
+						dbPull('users/creators/' + listUser.val().uid + '/', function(user){
+							createCard(user.val(), '#search-results')
 						})
-					}
+					})
 				})
-			}else{
-				var results = _('search-results')
-				results.innerHTML = '<p class="result-text">No results found</p>'
-			}
-		}
-
-		function searchSkill(){
-			var skill = _('tagsInput').value.toLowerCase()
-			_('search-results').innerHTML = ''
-			if(skill != 'default'){
-				dbPull('userList/skills/' + skill, snapshot => {
-					if(snapshot.val()){
-						snapshot.forEach(user => {
-							dbPull('users/creators/' + user.val().uid, (profile) => {
-								createCard(profile.val(), '#search-results')
-							})
-						})
-					}else{
-						var results = _('search-results')
-						results.innerHTML = '<p class="result-text">No results found</p>'
-					}
-				})
-			}
-		}
+			})
+		})

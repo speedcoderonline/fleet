@@ -1,8 +1,6 @@
 [data-page='explore']
 	
 	.main-content
-		background $lighter-grey
-		min-height calc(100vh - 79px)
 		.upper-section
 			padding 80px 0
 			display flex
@@ -11,33 +9,21 @@
 			border-style solid
 			border-width 0 0 6px 0
 			border-image $maingradient 1
-			.search-field
+			
+			input
+				padding 20px
+				font-size 140%
+				border none
+				border-radius 6px
 				margin 0 20px
-				input, select
-					padding 20px
-					font-size 120%
-					border none
-					border-radius 6px
-					background #f1f1f1f1
-					
-					&::placeholder
-						color rgba(black, .3)
-						font-weight lighter
-						
-				select
-					cursor pointer
-						
-				#peopleInput
-					border-radius 6px 0 0 6px
-					
-				.search-btn
-					background $maingradient
-					padding 20px
-					color white
-					border-radius 0 6px 6px 0
-					font-size 120%
-					
+				background #f1f1f1f1
+				
+				&::placeholder
+					color rgba(black, .3)
+					font-weight lighter
 		.lower-section
+			background $lighter-grey
+			min-height 100vh
 			text-align center
 			h3
 				font-weight lighter

@@ -9,9 +9,7 @@ block mainContent
 		.profile-info
 
 			.non-autosave
-				.image#image-container
-					input(type='file' id='file-input' multiple='false' accept='image/*' style='visibility: hidden;' onchange='imageUpload.call(this)')
-					label(for='file-input') +
+				.image
 				section.name
 					h4.title Name
 					input.text-input.first-name#first-name(placeholder='First name')
@@ -63,7 +61,6 @@ block mainContent
 		var currentProjectId = (new Date).getTime()
 		var newUser = getCookie('newUser')
 		var profileId
-		var selectedFile
 
 		//action-button -> edit or add friend
 		firebase.auth().onAuthStateChanged(function(user) {
@@ -88,9 +85,7 @@ block mainContent
 				}
 
 				//try{
-				storageRef('users/creators/' + currentUser().uid + '/' + currentUser().photoURL).getDownloadURL().then(function(url){
-					_('image-container').style.backgroundImage = 'url(' + url + ')'
-				})
+
 				document.getElementById('first-name').value = userData.firstname
 				document.getElementById('last-name').value = userData.lastname
 				document.getElementById('user-description').innerText = userData.description || ''
@@ -207,67 +202,6 @@ block mainContent
 				renderAllSkills(profileSkills, 'creator', currentUser().uid)
 			})
 		}
-
-		_('file-input').addEventListener('change', (e) => {
-			file = e.target.files[0]
-			console.log(file)
-			const imageUpload = storageRef('users/creators/' + currentUser().uid + '/' + file.name).put(file)
-
-			imageUpload.on('state_changed',
-				function progress(snapshot){
-					var percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-					console.log(percentage)
-				},
-				function error(error){
-					console.log(error)
-					popUp('Upload failed. Please try again.')
-				},
-
-				function complete(){
-					console.log('success')
-					if(currentUser().photoURL != null && currentUser.photoURL != file.name){
-						storageRef('users/creators/' + currentUser().uid + '/' + currentUser().photoURL).delete()
-						.then(() => {
-							if (currentUser() != null){
-								currentUser().updateProfile({
-									photoURL: file.name
-								})
-								dbRef('users/creators/' + currentUser().uid).update({
-									photoURL: file.name
-								})
-							}
-						})
-					} else {
-						currentUser().updateProfile({
-							photoURL: file.name
-						})
-					}
-					popUp('Profile picture updated!')
-				})
-
-			//- .then(() => {
-			//- 	console.log('success')
-				
-			//- })
-			//- .catch(error => {
-			//- 	if(error){
-			//- 		console.log(error)
-			//- 	}
-			//- })
-		});
-
-		function imageUpload(){
-			if(this.files && this.files[0]){
-				var reader = new FileReader()
-				reader.onload = function(data){
-					var image = _('image-container')
-					image.style.backgroundImage = 'url("' + reader.result + '")'
-				}
-				reader.readAsDataURL(this.files[0])
-			}
-		}
-
-
 
 		function saveEdits(){
 			if(!_('first-name').value || !_('last-name').value || !_('user-location').querySelector('.city').value || !_('user-location').querySelector('.country').value){
