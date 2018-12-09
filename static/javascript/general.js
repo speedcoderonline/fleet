@@ -52,6 +52,9 @@ function dbPull(path, func){
 	return firebase.database().ref(path).once('value', func)
 }
 
+function storageRef(path){
+	return firebase.storage().ref(path)
+}
 
 function createCard(user, element){
 	if (user.firstname && user.lastname) {
@@ -67,6 +70,12 @@ function createCard(user, element){
 		frame.classList.add('frame')
 		var image = document.createElement('div')
 		image.classList.add('image')
+
+		if(user.photoURL){
+			storageRef('users/creators/' + user.uid + '/' + user.photoURL).getDownloadURL().then(function(url){
+				image.style.backgroundImage = 'url(' + url + ')'
+			})
+		}
 
 		images.appendChild(frame)
 		frame.appendChild(image)

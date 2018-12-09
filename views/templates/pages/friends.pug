@@ -35,7 +35,7 @@ block mainContent
 				
 	section#creator-friends
 		h5.title Friends
-		.content
+		.content#friends-content
 			//- .item
 			//- 	.images
 			//- 		.frame
@@ -56,24 +56,26 @@ block mainContent
 				firebase.database().ref('users/creators/' + friend.key).once("value", function(snapshot2){
 					var creator = snapshot2.val()
 
-					var itemDiv = document.createElement('a')
-					itemDiv.href = '/user/creator-' + friend.key
-					itemDiv.classList.add('item')
-					document.querySelector('#creator-friends').querySelector('.content').appendChild(itemDiv)
+					createCard(creator, '#friends-content')					
 
-					var textWrapperDiv = document.createElement('div')
-					textWrapperDiv.classList.add('text-wrapper')
-					itemDiv.appendChild(textWrapperDiv)
+					//- var itemDiv = document.createElement('a')
+					//- itemDiv.href = '/user/creator-' + friend.key
+					//- itemDiv.classList.add('item')
+					//- document.querySelector('#creator-friends').querySelector('.content').appendChild(itemDiv)
 
-					var titleDiv = document.createElement('div')
-					titleDiv.classList.add('title')
-					titleDiv.innerText = creator.firstname + ' ' + creator.lastname
-					textWrapperDiv.appendChild(titleDiv)
+					//- var textWrapperDiv = document.createElement('div')
+					//- textWrapperDiv.classList.add('text-wrapper')
+					//- itemDiv.appendChild(textWrapperDiv)
 
-					var descriptionDiv = document.createElement('div')
-					descriptionDiv.classList.add('description')
-					descriptionDiv.innerText = creator.description || ''
-					textWrapperDiv.appendChild(descriptionDiv)
+					//- var titleDiv = document.createElement('div')
+					//- titleDiv.classList.add('title')
+					//- titleDiv.innerText = creator.firstname + ' ' + creator.lastname
+					//- textWrapperDiv.appendChild(titleDiv)
+
+					//- var descriptionDiv = document.createElement('div')
+					//- descriptionDiv.classList.add('description')
+					//- descriptionDiv.innerText = creator.description || ''
+					//- textWrapperDiv.appendChild(descriptionDiv)
 				})
 			})
 			document.querySelector('.loading-screen').classList.add('display-none')
